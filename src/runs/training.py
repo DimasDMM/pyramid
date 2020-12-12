@@ -82,17 +82,17 @@ def run_training(logger, config: Config):
             step += 1
 
             # Get inputs
-            masks = batch_data['masks'].to(device=device)
-            x_word = batch_data['x_word'].to(device=device)
-            x_char = batch_data['x_char'].to(device=device)
-            x_lm_inputs = batch_data['x_lm_input'].to(device=device)
-            x_lm_attention = batch_data['x_lm_attention'].to(device=device)
-            x_lm_type_ids = batch_data['x_lm_type_ids'].to(device=device)
-            x_lm_span = batch_data['x_lm_spans'].to(device=device)
+            masks = batch_data['masks'].to(device=config.device)
+            x_word = batch_data['x_word'].to(device=config.device)
+            x_char = batch_data['x_char'].to(device=config.device)
+            x_lm_inputs = batch_data['x_lm_input'].to(device=config.device)
+            x_lm_attention = batch_data['x_lm_attention'].to(device=config.device)
+            x_lm_type_ids = batch_data['x_lm_type_ids'].to(device=config.device)
+            x_lm_span = batch_data['x_lm_spans'].to(device=config.device)
             
             y_all_targets = []
             for i_layer in range(Config.total_layers):
-                y_target = batch_data['y_target_%d' % i_layer].to(device=device)
+                y_target = batch_data['y_target_%d' % i_layer].to(device=config.device)
                 y_all_targets.append(y_target)
 
             # Predict entities
