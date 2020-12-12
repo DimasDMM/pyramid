@@ -25,7 +25,7 @@ parser.add_argument('--dataset',
                     type=str,
                     default='genia',
                     action='store')
-parser.add_argument('--raw_file',
+parser.add_argument('--raw_filepath',
                     type=str,
                     default='./data/GENIA/GENIAcorpus3.02.merged.xml',
                     action='store')
@@ -40,7 +40,7 @@ parser.add_argument('--lm_name',
 args = parser.parse_args()
 
 if args.dataset == 'genia':
-    run_preprocess_genia(logger, args.cased, args.lm_name)
+    run_preprocess_genia(logger, args.raw_filepath, args.cased, args.lm_name)
 else:
     logger.error('Unknown dataset: %s' % args.dataset)
     raise Exception('Unknown dataset: %s' % args.dataset)

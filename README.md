@@ -33,7 +33,7 @@ tar -xvf GENIAcorpus3.02p.tgz -C GENIA
 cd ..
 python run_preprocess.py \
     --dataset genia \
-    --raw_file ./data/GENIA/GENIAcorpus3.02.merged.xml \
+    --raw_filepath "./data/GENIA/GENIAcorpus3.02.merged.xml" \
     --lm_name dmis-lab/biobert-v1.1 \
     --cased 0
 ```
