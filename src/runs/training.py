@@ -91,7 +91,7 @@ def run_training(logger, config: Config):
             x_lm_span = batch_data['x_lm_spans'].to(device=config.device)
             
             y_all_targets = []
-            for i_layer in range(Config.total_layers):
+            for i_layer in range(config.total_layers):
                 y_target = batch_data['y_target_%d' % i_layer].to(device=config.device)
                 y_all_targets.append(y_target)
 
