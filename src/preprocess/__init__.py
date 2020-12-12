@@ -1,4 +1,5 @@
 import json
+from .. import *
 
 def sanity_check(dataset):
     n_bad = 0

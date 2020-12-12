@@ -3,6 +3,7 @@ import pickle
 import torch
 from torch.utils.data import DataLoader
 
+from .. import *
 from ..data.dataloader import *
 from ..data.embeddings import *
 from ..data.preprocess import *
@@ -26,9 +27,6 @@ def run_training(logger, config: Config):
     logger.info('Loading datasets...')
 
     train_file = './data/train.%s.json' % config.dataset
-    valid_file = './data/valid.%s.json' % config.dataset
-    test_file = './data/test.%s.json' % config.dataset
-
     with open(train_file, 'r') as fp:
         train_dataset = json.load(fp)
     logger.info('Loaded train dataset size: %d' % len(train_dataset))

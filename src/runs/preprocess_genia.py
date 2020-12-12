@@ -1,3 +1,4 @@
+from .. import *
 from ..preprocess import *
 from ..preprocess.genia import *
 
@@ -53,6 +54,6 @@ def run_preprocess_genia(logger, filepath, cased, lm_name, no_entity='O'):
     # Split and store
     logger.info('Split and store dataset...')
     train_dataset, dev_dataset, test_dataset = split_dataset(genia_data)
-    #store_datasets('genia', train_dataset, dev_dataset, test_dataset)
+    store_datasets('genia', train_dataset, dev_dataset, test_dataset)
     
     logger.info('Done')
