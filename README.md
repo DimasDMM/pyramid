@@ -17,7 +17,7 @@ mkdir artifacts
 Download GloVe embeddings:
 ```sh
 cd data
-wget http://nlp.stanford.edu/data/glove.6B.zip
+wget http://nlp.stanford.edu/data/glove.6B.zip --no-check-certificate
 unzip glove.6B.zip
 cd ..
 ```
@@ -27,13 +27,13 @@ cd ..
 Download and preprocess the GENIA dataset:
 ```sh
 cd data
-wget http://www.nactem.ac.uk/GENIA/current/GENIA-corpus/Part-of-speech/GENIAcorpus3.02p.tgz
+wget http://www.nactem.ac.uk/GENIA/current/GENIA-corpus/Term/GENIAcorpus3.02.tgz --no-check-certificate
 mkdir GENIA
-tar -xvf GENIAcorpus3.02p.tgz -C GENIA
+tar -xvf GENIAcorpus3.02.tgz -C GENIA
 cd ..
 python run_preprocess.py \
     --dataset genia \
-    --raw_filepath "./data/GENIA/GENIAcorpus3.02.merged.xml" \
+    --raw_filepath "./data/GENIA/GENIA_term_3.02/GENIAcorpus3.02.xml" \
     --lm_name dmis-lab/biobert-v1.1 \
     --cased 0
 ```
@@ -43,19 +43,19 @@ python run_preprocess.py \
 Run model training:
 ```sh
 python run_training.py \
---model_ckpt ./artifacts/genia/ \
---wv_file ./data/glove.6B.100d.txt \
---dataset genia \
---total_layers 16 \
---batch_size 64 \
---evaluate_interval 1000 \
---token_emb_dim 100 \
---char_emb_dim 100 \
---cased 0 \
---hidden_dim 100 \
---dropout 0.4 \
---freeze_wv 1 \
---lm_name dmis-lab/biobert-v1.1 \
---lm_emb_dim 768 \
---device cuda
+    --model_ckpt ./artifacts/genia/ \
+    --wv_file ./data/glove.6B.100d.txt \
+    --dataset genia \
+    --total_layers 16 \
+    --batch_size 64 \
+    --evaluate_interval 1000 \
+    --token_emb_dim 100 \
+    --char_emb_dim 100 \
+    --cased 0 \
+    --hidden_dim 100 \
+    --dropout 0.4 \
+    --freeze_wv 1 \
+    --lm_name dmis-lab/biobert-v1.1 \
+    --lm_emb_dim 768 \
+    --device cuda
 ```
