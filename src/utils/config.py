@@ -15,7 +15,7 @@ class Config:
         max_steps=1e9,
         max_epoches=100,
         dropout=0.4,
-        wv_file='./data/embeddings/glove.6B.100d.txt',
+        wv_file='./data/glove.6B.100d.txt',
         freeze_wv=True,
         lm_emb_dim=768,
         lm_name='dmis-lab/biobert-v1.1',

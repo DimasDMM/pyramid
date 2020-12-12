@@ -28,9 +28,14 @@ Download and preprocess the GENIA dataset:
 ```sh
 cd data
 wget http://www.nactem.ac.uk/GENIA/current/GENIA-corpus/Part-of-speech/GENIAcorpus3.02p.tgz
+mkdir GENIA
 tar -xvf GENIAcorpus3.02p.tgz -C GENIA
 cd ..
-python run_preprocess.py --dataset genia --lm_name dmis-lab/biobert-v1.1 --cased 0
+python run_preprocess.py \
+    --dataset genia \
+    --raw_file ./data/GENIA/GENIAcorpus3.02.merged.xml \
+    --lm_name dmis-lab/biobert-v1.1 \
+    --cased 0
 ```
 
 ## Commands
@@ -39,7 +44,7 @@ Run model training:
 ```sh
 python run_training.py \
 --model_ckpt ./artifacts/genia/ \
---wv_file ./data/embeddings/glove.6B.100d.txt \
+--wv_file ./data/glove.6B.100d.txt \
 --dataset genia \
 --total_layers 16 \
 --batch_size 64 \

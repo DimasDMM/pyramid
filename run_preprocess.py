@@ -24,15 +24,19 @@ parser = argparse.ArgumentParser(description='Arguments for preprocess.')
 parser.add_argument('--dataset',
                     type=str,
                     default='genia',
-                    action='store',)
+                    action='store')
+parser.add_argument('--raw_file',
+                    type=str,
+                    default='./data/GENIA/GENIAcorpus3.02.merged.xml',
+                    action='store')
 parser.add_argument('--cased',
                     type=int,
                     default=False,
-                    action='store',)
+                    action='store')
 parser.add_argument('--lm_name',
                     default='dmis-lab/biobert-v1.1',
                     type=str,
-                    action='store',)
+                    action='store')
 args = parser.parse_args()
 
 if args.dataset == 'genia':

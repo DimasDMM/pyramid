@@ -1,14 +1,13 @@
 from ..preprocess import *
 from ..preprocess.genia import *
 
-def run_preprocess_genia(logger, cased, lm_name, no_entity='O'):
+def run_preprocess_genia(logger, filepath, cased, lm_name, no_entity='O'):
     logger.info('== GENIA PREPROCESS ==')
 
     logger.info('Loading tokenizer')
     tokenizer = get_tokenizer(lm_name=lm_name, lowercase=(not cased))
 
     logger.info('Preprocessing raw data...')
-    filepath = './data/GENIA_term_3.02/GENIAcorpus3.02.xml'
     genia_data = []
     root = ET.parse(filepath).getroot()
     
