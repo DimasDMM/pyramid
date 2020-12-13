@@ -20,9 +20,10 @@ def run_training(logger, config: Config):
 
     if config.device is None:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        logger.info('Using device:', device)
         torch.cuda.empty_cache()
         torch.cuda.set_device(config.device)
+
+    logger.info('Using device:', config.device)
 
     # Load datasets
     logger.info('Loading datasets...')
@@ -154,7 +155,7 @@ def run_training(logger, config: Config):
 
         history.append(run_loss / len(train_dataloader))
         logger.info("Epoch %d of %d | Loss = %.3f" % (i_epoch + 1, config.max_epoches,
-                                                        run_loss / len(train_dataloader)))
+                                                      run_loss / len(train_dataloader)))
         
         logger.info('Evaluating model with val. dataset...')
         eval_scores = evaluate(net, dataloader=valid_dataloader, device=config.device,
