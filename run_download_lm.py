@@ -3,18 +3,22 @@ import logging as logger
 import os
 from transformers import BertModel
 from transformers import BertTokenizer
-
-logger.basicConfig(level=logger.DEBUG)
+from src import *
 
 if __name__ != '__main__':
     exit(0)
 
 parser = argparse.ArgumentParser(description='Arguments for LM Download.')
+parser.add_argument('--log_to_file',
+                    default=False,
+                    type=int,
+                    action='store')
 parser.add_argument('--lm_name',
                     default='dmis-lab/biobert-v1.1',
                     type=str,
                     action='store')
 args = parser.parse_args()
+setup_logger(logger, args.log_to_file)
 
 logger.info('== LM DOWNLOADER ==')
 

@@ -24,7 +24,7 @@ cd ..
 
 It is necessary that you download the tokenizer and pretrained LM beforehand:
 ```sh
-python run_download.py --lm_name dmis-lab/biobert-v1.1
+python run_download.py --lm_name dmis-lab/biobert-v1.1 --log_to_file 0
 ```
 
 ### GENIA dataset
@@ -40,7 +40,8 @@ python run_preprocess.py \
     --dataset genia \
     --raw_filepath "./data/GENIA/GENIA_term_3.02/GENIAcorpus3.02.xml" \
     --lm_name dmis-lab/biobert-v1.1 \
-    --cased 0
+    --cased 0 \
+    --log_to_file 0
 ```
 
 ## Commands
@@ -62,5 +63,6 @@ python run_training.py \
     --freeze_wv 1 \
     --lm_name dmis-lab/biobert-v1.1 \
     --lm_emb_dim 768 \
-    --device cuda
+    --device cuda \
+    --log_to_file 0
 ```

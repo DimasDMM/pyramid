@@ -1,6 +1,7 @@
 import argparse
 import logging as logger
 
+from src import *
 from src.runs.preprocess_genia import run_preprocess_genia
 from src.runs.training import run_training
 from src.utils.config import Config
@@ -21,6 +22,10 @@ def none_or_int(value):
     return int(value)
 
 parser = argparse.ArgumentParser(description='Arguments for preprocess.')
+parser.add_argument('--log_to_file',
+                    default=False,
+                    type=int,
+                    action='store')
 parser.add_argument('--dataset',
                     type=str,
                     default='genia',
@@ -38,6 +43,7 @@ parser.add_argument('--lm_name',
                     type=str,
                     action='store')
 args = parser.parse_args()
+setup_logger(logger, args.log_to_file)
 
 if args.dataset == 'genia':
     run_preprocess_genia(logger, args.raw_filepath, args.cased, args.lm_name)
