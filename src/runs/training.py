@@ -113,7 +113,7 @@ def run_training(logger, config: Config):
             adjust_lr(optimizer, step)
             run_loss += loss.cpu().data.numpy()
 
-            if step % 100 == 0:
+            if i_batch % 10 == 0:
                 logger.info("Epoch %d of %d | Batch %d of %d | Loss = %.3f" % (
                         i_epoch + 1, config.max_epoches, i_batch + 1, n_batches, run_loss / (i_batch + 1)))
             
