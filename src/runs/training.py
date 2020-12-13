@@ -121,7 +121,7 @@ def run_training(logger, config: Config):
                 break
             
             # Clear some memory
-            if device == 'cuda':
+            if config.device == 'cuda':
                 del masks
                 del x_word
                 del x_char
