@@ -55,7 +55,6 @@ python run_training.py \
     --dataset genia \
     --total_layers 16 \
     --batch_size 64 \
-    --evaluate_interval 1000 \
     --token_emb_dim 100 \
     --char_emb_dim 100 \
     --cased 0 \

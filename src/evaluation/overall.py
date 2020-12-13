@@ -1,14 +1,11 @@
 import torch
 from collections import defaultdict
 
-def evaluate(net, dataloader, device, entity_idx, total_layers=16, logger=None):
+def evaluate(net, dataloader, device, entity_idx, total_layers=16):
     seq_labels = []
     seq_preds = []
 
-    if logger is not None:
-        logger.info('Evaluating model...')
-
-    for i_batch, batch_data in enumerate(test_dataloader):
+    for i_batch, batch_data in enumerate(dataloader):
         # Get inputs
         masks = batch_data['masks'].to(device=device)
         x_word = batch_data['x_word'].to(device=device)
@@ -46,10 +43,6 @@ def evaluate(net, dataloader, device, entity_idx, total_layers=16, logger=None):
             torch.cuda.empty_cache()
 
     overall_scores = get_seq_metrics(seq_labels, seq_preds, entity_idx, verbose=1)
-    
-    if logger is not None:
-        logger.info('Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
-                overall_scores['precision'], overall_scores['recall'], overall_scores['f1']))
     
     return overall_scores
 

@@ -102,11 +102,6 @@ def run_training(logger, config: Config):
         for i_batch, batch_data in enumerate(train_dataloader):
             step += 1
 
-            # Do validation (if correspond)
-            if step % config.evaluate_interval == 0:
-                evaluate(net, dataloader=valid_dataloader, device=config.device,
-                         total_layers=config.total_layers, entity_idx=entity_idx, logger=logger)
-
             # Get inputs
             masks = batch_data['masks'].to(device=config.device)
             x_word = batch_data['x_word'].to(device=config.device)
@@ -161,6 +156,12 @@ def run_training(logger, config: Config):
         logger.info("Epoch %d of %d | Loss = %.3f" % (i_epoch + 1, config.max_epoches,
                                                         run_loss / len(train_dataloader)))
         
+        logger.info('Evaluating model with val. dataset...')
+        eval_scores = evaluate(net, dataloader=valid_dataloader, device=config.device,
+                               total_layers=config.total_layers, entity_idx=entity_idx)
+        logger.info('Val. Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
+                    eval_scores['precision'], eval_scores['recall'], eval_scores['f1']))
+
         if config.max_steps != -1 and config.max_steps <= step:
             break
     
@@ -182,9 +183,11 @@ def run_training(logger, config: Config):
         pickle.dump(model_config, fp, protocol=pickle.HIGHEST_PROTOCOL)
     
     # Evaluate with test dataset
-    logger.info('Use test dataset to evaluate model performance')
-    evaluate(net, dataloader=test_dataloader, device=config.device,
-             total_layers=config.total_layers, entity_idx=entity_idx, logger=logger)
+    logger.info('Evaluating model with test dataset...')
+    eval_scores = evaluate(net, dataloader=test_dataloader, device=config.device,
+                           total_layers=config.total_layers, entity_idx=entity_idx)
+    logger.info('Test Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
+                eval_scores['precision'], eval_scores['recall'], eval_scores['f1']))
 
     logger.info('Done')
 

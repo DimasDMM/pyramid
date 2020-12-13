@@ -11,7 +11,6 @@ class Config:
         hidden_dim=100,
         total_layers=16,
         batch_size=64,
-        evaluate_interval=1000,
         max_steps=1e9,
         max_epoches=100,
         dropout=0.4,
@@ -31,7 +30,6 @@ class Config:
         self.hidden_dim = hidden_dim
         self.total_layers = total_layers
         self.batch_size = batch_size
-        self.evaluate_interval = evaluate_interval
         self.max_steps = max_steps
         self.max_epoches = max_epoches
         self.dropout = dropout
