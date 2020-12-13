@@ -36,7 +36,8 @@ class LMEncoder(nn.Module):
         self.lm_layer = self._create_lm_layer(lm_name, False).to(device=device)
     
     def _create_lm_layer(self, lm_name, trainable):
-        bert_model = BertModel.from_pretrained(lm_name)
+        lm_path = './artifacts/%s/' % lm_name
+        bert_model = BertModel.from_pretrained(lm_path)
         if not trainable:
             for param in bert_model.parameters():
                 param.requires_grad = False

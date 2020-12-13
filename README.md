@@ -22,6 +22,11 @@ unzip glove.6B.zip
 cd ..
 ```
 
+It is necessary that you download the tokenizer and pretrained LM beforehand:
+```sh
+python run_download.py --lm_name dmis-lab/biobert-v1.1
+```
+
 ### GENIA dataset
 
 Download and preprocess the GENIA dataset:

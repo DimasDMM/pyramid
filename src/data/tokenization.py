@@ -3,17 +3,9 @@ import re
 from tokenizers import BertWordPieceTokenizer
 from transformers import BertTokenizer
 
-def get_tokenizer(artifacts_path='artifacts/', lm_name='dmis-lab/biobert-v1.1', lowercase=True):
-    slow_tokenizer = BertTokenizer.from_pretrained(lm_name)
-
-    save_path = '%s%s/' % (artifacts_path, lm_name)
-    if not os.path.exists(save_path):
-        os.makedirs(save_path)
-        slow_tokenizer.save_pretrained(save_path)
-
-    # We can already use the Slow Tokenizer, but its implementation in Rust is much faster.
-    tokenizer = BertWordPieceTokenizer('%svocab.txt' % save_path, lowercase=lowercase)
-    
+def get_tokenizer(lm_name='dmis-lab/biobert-v1.1', lowercase=True):
+    lm_path = './artifacts/%s/' % lm_name
+    tokenizer = BertWordPieceTokenizer('%svocab.txt' % lm_path, lowercase=lowercase)
     return tokenizer
 
 def tokenize_text(tokenizer, text, lowercase=True):
