@@ -8,6 +8,7 @@ from ..data.dataloader import *
 from ..data.embeddings import *
 from ..data.preprocess import *
 from ..data.tokenization import *
+from ..evaluation.overall import *
 from ..model.encoders import *
 from ..model.inputs import *
 from ..model.layers import *
@@ -31,9 +32,21 @@ def run_training(logger, config: Config):
         train_dataset = json.load(fp)
     logger.info('Loaded train dataset size: %d' % len(train_dataset))
 
+    valid_file = './data/valid.%s.json' % config.dataset
+    with open(valid_file, 'r') as fp:
+        valid_dataset = json.load(fp)
+    logger.info('Loaded valid dataset size: %d' % len(valid_dataset))
+
+    test_file = './data/test.%s.json' % config.dataset
+    with open(test_file, 'r') as fp:
+        test_dataset = json.load(fp)
+    logger.info('Loaded test dataset size: %d' % len(test_dataset))
+
     # Transform format of nested entities
     logger.info('Building layer outputs...')
     train_dataset, entity_dict = add_layer_outputs(train_dataset, total_layers=config.total_layers)
+    valid_dataset, _ = add_layer_outputs(valid_dataset, total_layers=config.total_layers, entity_dict=entity_dict)
+    test_dataset, _ = add_layer_outputs(test_dataset, total_layers=config.total_layers, entity_dict=entity_dict)
     entity_idx = [x for x in list(entity_dict.keys())]
 
     # Load embeddings and build vocabularies
@@ -50,11 +63,19 @@ def run_training(logger, config: Config):
     char_input = CharInput(char2id)
     bert_input = BertInput(tokenizer)
 
-    logger.info('Creating data loader...')
+    logger.info('Creating data loaders...')
     nne_train_dataset = NestedNamedEntitiesDataset(
             train_dataset, word_input, char_input, bert_input, total_layers=config.total_layers,
             skip_exceptions=False, max_items=-1, padding_length=512)
+    nne_valid_dataset = NestedNamedEntitiesDataset(
+            valid_dataset, word_input, char_input, bert_input, total_layers=config.total_layers,
+            skip_exceptions=False, max_items=-1, padding_length=512)
+    nne_test_dataset = NestedNamedEntitiesDataset(
+            test_dataset, word_input, char_input, bert_input, total_layers=config.total_layers,
+            skip_exceptions=False, max_items=-1, padding_length=512)
     train_dataloader = DataLoader(nne_train_dataset, batch_size=config.batch_size, shuffle=False, num_workers=0)
+    valid_dataloader = DataLoader(nne_valid_dataset, batch_size=config.batch_size, shuffle=False, num_workers=0)
+    test_dataloader = DataLoader(nne_test_dataset, batch_size=config.batch_size, shuffle=False, num_workers=0)
 
     logger.info('Building model...')
     total_classes = len(entity_idx)
@@ -80,6 +101,11 @@ def run_training(logger, config: Config):
 
         for i_batch, batch_data in enumerate(train_dataloader):
             step += 1
+
+            # Do validation (if correspond)
+            if step % config.evaluate_interval == 0:
+                evaluate(net, dataloader=valid_dataloader, device=config.device,
+                         total_layers=config.total_layers, entity_idx=entity_idx, logger=logger)
 
             # Get inputs
             masks = batch_data['masks'].to(device=config.device)
@@ -132,9 +158,8 @@ def run_training(logger, config: Config):
                 torch.cuda.empty_cache()
 
         history.append(run_loss / len(train_dataloader))
-        if step % 100 == 0:
-            logger.info("Epoch %d of %d | Loss = %.3f" % (i_epoch + 1, config.max_epoches,
-                                                          run_loss / len(train_dataloader)))
+        logger.info("Epoch %d of %d | Loss = %.3f" % (i_epoch + 1, config.max_epoches,
+                                                        run_loss / len(train_dataloader)))
         
         if config.max_steps != -1 and config.max_steps <= step:
             break
@@ -156,6 +181,11 @@ def run_training(logger, config: Config):
     with open(filepath, 'wb') as fp:
         pickle.dump(model_config, fp, protocol=pickle.HIGHEST_PROTOCOL)
     
+    # Evaluate with test dataset
+    logger.info('Use test dataset to evaluate model performance')
+    evaluate(net, dataloader=test_dataloader, device=config.device,
+             total_layers=config.total_layers, entity_idx=entity_idx, logger=logger)
+
     logger.info('Done')
 
 def adjust_lr(optimizer, step, decay_rate=0.05, decay_steps=1000, inital_lr=0.01):

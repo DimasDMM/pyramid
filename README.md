@@ -6,12 +6,13 @@ TODO
 
 ## Set up
 
-Clone this repository:
+Clone this repository, create default folders and install dependencies:
 ```sh
 git clone https://github.com/DimasDMM/pyramid.git
 cd pyramid
 mkdir data
 mkdir artifacts
+pip install -r requirements.txt
 ```
 
 Download GloVe embeddings:
