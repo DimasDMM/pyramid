@@ -5,8 +5,6 @@ from src import *
 from src.runs.training import run_training
 from src.utils.config import Config
 
-logger.basicConfig(level=logger.DEBUG)
-
 if __name__ != '__main__':
     exit(0)
 
