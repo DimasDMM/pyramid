@@ -70,7 +70,7 @@ class BertInput:
             encoded_text = self.tokenizer.encode(token)
 
             # Create inputs
-            span = len(encoded_text.ids[1:-1]) - 2
+            span = len(encoded_text.ids[1:-1])
             token_spans += [span] + [0] * (span - 1)
             input_ids += encoded_text.ids[1:-1]
             type_ids += encoded_text.type_ids[1:-1]
