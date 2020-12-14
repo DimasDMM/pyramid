@@ -16,7 +16,7 @@ from ..model.inputs import *
 from ..model.layers import *
 from ..utils.config import *
 
-def run_training(logger, config: Config):
+def run_evaluator(logger, config: Config):
     # Set up step
     logger.info('== EVALUATOR ==')
 

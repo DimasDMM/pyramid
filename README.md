@@ -71,7 +71,7 @@ python run_training.py \
 
 Run evaluation in a trained model:
 ```sh
-python run_training.py \
+python run_evaluator.py \
     --model_ckpt ./artifacts/genia/ \
     --dataset genia \
     --device cuda \
