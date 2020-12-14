@@ -68,3 +68,12 @@ python run_training.py \
     --device cuda \
     --log_to_file 0
 ```
+
+Run evaluation in a trained model:
+```sh
+python run_training.py \
+    --model_ckpt ./artifacts/genia/ \
+    --dataset genia \
+    --device cuda \
+    --log_to_file 0
+```

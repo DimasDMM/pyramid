@@ -190,13 +190,6 @@ def run_training(logger, config: Config):
     filepath = '%s%s_config.pickle' % (config.model_ckpt, config.dataset)
     with open(filepath, 'wb') as fp:
         pickle.dump(model_config, fp, protocol=pickle.HIGHEST_PROTOCOL)
-    
-    # Evaluate with test dataset
-    logger.info('Evaluating model with test dataset...')
-    eval_scores = evaluate(net, dataloader=test_dataloader, device=config.device,
-                           total_layers=config.total_layers, entity_idx=entity_idx)
-    logger.info('Test Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
-                eval_scores['precision'], eval_scores['recall'], eval_scores['f1']))
 
     logger.info('Done')
 
