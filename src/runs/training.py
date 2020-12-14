@@ -1,5 +1,6 @@
 import json
 import gc
+import os
 import pickle
 import torch
 from torch.utils.data import DataLoader
@@ -24,7 +25,7 @@ def run_training(logger, config: Config):
         torch.cuda.empty_cache()
         torch.cuda.set_device(config.device)
 
-    logger.info('Using device:', config.device)
+    logger.info('Using device: %s' % config.device)
 
     # Load datasets
     logger.info('Loading datasets...')
@@ -159,11 +160,12 @@ def run_training(logger, config: Config):
         logger.info("Epoch %d of %d | Loss = %.3f" % (i_epoch + 1, config.max_epoches,
                                                       run_loss / len(train_dataloader)))
         
-        #logger.info('Evaluating model with val. dataset...')
-        #eval_scores = evaluate(net, dataloader=valid_dataloader, device=config.device,
-        #                       total_layers=config.total_layers, entity_idx=entity_idx)
-        #logger.info('Val. Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
-        #            eval_scores['precision'], eval_scores['recall'], eval_scores['f1']))
+        if config.eval_on_training:
+            logger.info('Evaluating model with val. dataset...')
+            eval_scores = evaluate(net, dataloader=valid_dataloader, device=config.device,
+                                total_layers=config.total_layers, entity_idx=entity_idx)
+            logger.info('Val. Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
+                        eval_scores['precision'], eval_scores['recall'], eval_scores['f1']))
 
         if config.max_steps != -1 and config.max_steps <= step:
             break
@@ -172,6 +174,10 @@ def run_training(logger, config: Config):
 
     # Save model
     logger.info('Saving model...')
+
+    if not os.path.exists(config.model_ckpt):
+        os.makedirs(config.model_ckpt)
+
     filepath = '%s%s_model.pt' % (config.model_ckpt, config.dataset)
     torch.save(net.state_dict(), filepath)
     

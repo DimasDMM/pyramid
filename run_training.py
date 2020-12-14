@@ -33,6 +33,11 @@ parser.add_argument('--wv_file',
                     action='store')
 parser.add_argument('--dataset',
                     default='genia',
+                    type=str,
+                    action='store')
+parser.add_argument('--eval_on_training',
+                    default=False,
+                    type=int,
                     action='store')
 parser.add_argument('--total_layers',
                     default=16,
@@ -40,10 +45,6 @@ parser.add_argument('--total_layers',
                     action='store')
 parser.add_argument('--batch_size',
                     default=64,
-                    type=int,
-                    action='store')
-parser.add_argument('--evaluate_interval',
-                    default=1000,
                     type=int,
                     action='store')
 parser.add_argument('--max_steps',

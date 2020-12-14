@@ -6,6 +6,7 @@ class Config:
         cased=False,
         model_ckpt='./artifacts/genia/',
         dataset='genia',
+        eval_on_training=False,
         token_emb_dim=100,
         char_emb_dim=100,
         hidden_dim=100,
@@ -25,6 +26,7 @@ class Config:
         self.cased = cased
         self.model_ckpt = model_ckpt
         self.dataset = dataset
+        self.eval_on_training = eval_on_training
         self.token_emb_dim = token_emb_dim
         self.char_emb_dim = char_emb_dim
         self.hidden_dim = hidden_dim

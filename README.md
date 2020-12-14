@@ -53,6 +53,8 @@ python run_training.py \
     --model_ckpt ./artifacts/genia/ \
     --wv_file ./data/glove.6B.100d.txt \
     --dataset genia \
+    --max_epoches 100 \
+    --eval_on_training 0 \
     --total_layers 16 \
     --batch_size 64 \
     --token_emb_dim 100 \
