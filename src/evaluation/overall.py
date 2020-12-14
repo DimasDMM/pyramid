@@ -1,5 +1,6 @@
-import torch
 from collections import defaultdict
+import gc
+import torch
 
 def evaluate(net, dataloader, device, entity_idx, total_layers=16):
     seq_labels = []
@@ -40,6 +41,7 @@ def evaluate(net, dataloader, device, entity_idx, total_layers=16):
             del x_lm_attention
             del x_lm_type_ids
             del x_lm_span
+            gc.collect()
             torch.cuda.empty_cache()
 
     overall_scores = get_seq_metrics(seq_labels, seq_preds, entity_idx, verbose=1)

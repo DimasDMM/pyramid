@@ -1,4 +1,5 @@
 import json
+import gc
 import pickle
 import torch
 from torch.utils.data import DataLoader
@@ -151,6 +152,7 @@ def run_training(logger, config: Config):
                 del x_lm_attention
                 del x_lm_type_ids
                 del x_lm_span
+                gc.collect()
                 torch.cuda.empty_cache()
 
         history.append(run_loss / len(train_dataloader))
