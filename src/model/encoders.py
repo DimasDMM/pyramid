@@ -53,8 +53,12 @@ class LMEncoder(nn.Module):
             mask_length = masks[seq_i].sum()
             
             for token_i, span in enumerate(seq_span):
-                if token_i >= mask_length:
+                if token_i >= mask_length - 1:
+                    # Skips from SEP token
                     break
+                elif token_i == 0:
+                    # Skips CLS token
+                    continue
                 
                 for k in range(span):
                     x[seq_i, token_i] = x[seq_i, token_i].add(x_lm[seq_i, token_i+k+1])
