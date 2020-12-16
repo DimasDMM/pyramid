@@ -66,6 +66,7 @@ python run_training.py \
     --lm_name dmis-lab/biobert-v1.1 \
     --lm_emb_dim 768 \
     --device cuda \
+    --continue_training 0 \
     --log_to_file 0
 ```
 

@@ -14,6 +14,7 @@ from ..evaluation.overall import *
 from ..model.encoders import *
 from ..model.inputs import *
 from ..model.layers import *
+from ..model.manager import *
 from ..utils.config import *
 
 def run_training(logger, config: Config):
@@ -40,24 +41,42 @@ def run_training(logger, config: Config):
         valid_dataset = json.load(fp)
     logger.info('Loaded valid dataset size: %d' % len(valid_dataset))
 
-    test_file = './data/test.%s.json' % config.dataset
-    with open(test_file, 'r') as fp:
-        test_dataset = json.load(fp)
-    logger.info('Loaded test dataset size: %d' % len(test_dataset))
+    # Load trained model or build a new one
+    if config.continue_training:
+        if not os.path.exists(config.model_ckpt):
+            raise Exception('Pretrained model not exists in: %s' % config.model_ckpt)
 
-    # Transform format of nested entities
-    logger.info('Building layer outputs...')
-    train_dataset, entity_dict = add_layer_outputs(train_dataset, total_layers=config.total_layers)
-    valid_dataset, _ = add_layer_outputs(valid_dataset, total_layers=config.total_layers, entity_dict=entity_dict)
-    test_dataset, _ = add_layer_outputs(test_dataset, total_layers=config.total_layers, entity_dict=entity_dict)
-    entity_idx = [x for x in list(entity_dict.keys())]
+        net, config, word2id, char2id, entity_idx = load_model_objects(
+                logger, config.model_ckpt, config.dataset, config.device)
+        entity_dict = {x:i for i, x in enumerate(entity_idx)}
+        
+        # Transform format of nested entities
+        logger.info('Building layer outputs...')
+        train_dataset, _ = add_layer_outputs(train_dataset, total_layers=config.total_layers, entity_dict=entity_dict)
+        valid_dataset, _ = add_layer_outputs(valid_dataset, total_layers=config.total_layers, entity_dict=entity_dict)
+    else:
+        if os.path.exists(config.model_ckpt):
+            raise Exception('Pretrained model already exists in: %s' % config.model_ckpt)
 
-    # Load embeddings and build vocabularies
-    logger.info('Loading embeddings...')
-    special_tokens = ['[UNK]', '[PAD]', '[CLS]', '[SEP]', '[MASK]']
-    embedding_matrix, id2word, word2id = load_embedding_matrix(config.wv_file, config.token_emb_dim, special_tokens)
+        # Transform format of nested entities
+        logger.info('Building layer outputs...')
+        train_dataset, entity_dict = add_layer_outputs(train_dataset, total_layers=config.total_layers)
+        valid_dataset, _ = add_layer_outputs(valid_dataset, total_layers=config.total_layers, entity_dict=entity_dict)
+        entity_idx = [x for x in list(entity_dict.keys())]
 
-    id2char, char2id = build_char_vocab(train_dataset, special_tokens=special_tokens)
+        # Load embeddings and build vocabularies
+        logger.info('Loading embeddings...')
+        special_tokens = ['[UNK]', '[PAD]', '[CLS]', '[SEP]', '[MASK]']
+        embedding_matrix, id2word, word2id = load_embedding_matrix(config.wv_file, config.token_emb_dim, special_tokens)
+        id2char, char2id = build_char_vocab(train_dataset, special_tokens=special_tokens)
+
+        # Build model
+        logger.info('Building model...')
+        total_classes = len(entity_idx)
+        net = PyramidNet(embedding_matrix, char2id, lm_name=config.lm_name, total_layers=config.total_layers,
+                         drop_rate=config.dropout, seq_length=512, lm_dimension=config.lm_emb_dim,
+                         char_dimension=config.char_emb_dim, word_dimension=config.token_emb_dim,
+                         total_classes=total_classes, device=config.device)
 
     # Create tokenizer and data inputs
     logger.info('Loading tokenizer and data inputs...')
@@ -66,6 +85,7 @@ def run_training(logger, config: Config):
     char_input = CharInput(char2id)
     bert_input = BertInput(tokenizer)
 
+    # Data loaders
     logger.info('Creating data loaders...')
     nne_train_dataset = NestedNamedEntitiesDataset(
             train_dataset, word_input, char_input, bert_input, total_layers=config.total_layers,
@@ -73,19 +93,9 @@ def run_training(logger, config: Config):
     nne_valid_dataset = NestedNamedEntitiesDataset(
             valid_dataset, word_input, char_input, bert_input, total_layers=config.total_layers,
             skip_exceptions=False, max_items=-1, padding_length=512)
-    nne_test_dataset = NestedNamedEntitiesDataset(
-            test_dataset, word_input, char_input, bert_input, total_layers=config.total_layers,
-            skip_exceptions=False, max_items=-1, padding_length=512)
     train_dataloader = DataLoader(nne_train_dataset, batch_size=config.batch_size, shuffle=False, num_workers=0)
     valid_dataloader = DataLoader(nne_valid_dataset, batch_size=config.batch_size, shuffle=False, num_workers=0)
-    test_dataloader = DataLoader(nne_test_dataset, batch_size=config.batch_size, shuffle=False, num_workers=0)
-
-    logger.info('Building model...')
-    total_classes = len(entity_idx)
-    net = PyramidNet(embedding_matrix, char2id, lm_name=config.lm_name, total_layers=config.total_layers,
-                     drop_rate=config.dropout, seq_length=512, lm_dimension=config.lm_emb_dim,
-                     total_classes=total_classes, device=config.device)
-
+    
     # Training step
     logger.info('== MODEL TRAINING ==')
     

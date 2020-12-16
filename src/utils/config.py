@@ -19,6 +19,7 @@ class Config:
         freeze_wv=True,
         lm_emb_dim=768,
         lm_name='dmis-lab/biobert-v1.1',
+        continue_training=True,
         device=None,
         *args,
         **kargs,
@@ -39,6 +40,7 @@ class Config:
         self.freeze_wv = freeze_wv
         self.lm_emb_dim = lm_emb_dim
         self.lm_name = lm_name
+        self.continue_training = continue_training
         self.device = device
         
     def __call__(self, **kargs):
