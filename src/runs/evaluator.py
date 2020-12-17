@@ -27,9 +27,16 @@ def run_evaluator(logger, config: Config):
         torch.cuda.set_device(config.device)
     logger.info('Using device: %s' % config.device)
 
+    logger.info('Loading model...')
     net, model_params, word2id, char2id, entity_idx = load_model_objects(
             logger, config.model_ckpt, config.dataset, config.device)
     
+    logger.info('Loading dataset...')
+    test_file = './data/test.%s.json' % config.dataset
+    with open(test_file, 'r') as fp:
+        test_dataset = json.load(fp)
+    logger.info('Loaded test dataset size: %d' % len(test_dataset))
+
     # Create tokenizer and data inputs
     logger.info('Loading tokenizer and data inputs...')
     tokenizer = get_tokenizer(lm_name=model_params.lm_name, lowercase=(not model_params.cased))
