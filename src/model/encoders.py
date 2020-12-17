@@ -45,7 +45,8 @@ class LMEncoder(nn.Module):
         return bert_model.to(device=self.device)
 
     def forward(self, inputs, attention, type_ids, lm_spans, masks):
-        x_lm = self.lm_layer(input_ids=inputs, attention_mask=attention, token_type_ids=type_ids)
+        x_lm = self.lm_layer(input_ids=inputs, attention_mask=attention, token_type_ids=type_ids,
+                             output_hidden_states=True)
         x_lm = torch.stack(x_lm[2][-4:])
         x_lm = torch.mean(x_lm, dim=0)
         
