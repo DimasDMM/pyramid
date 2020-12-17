@@ -87,6 +87,10 @@ parser.add_argument('--lm_emb_dim',
                     default=768,
                     type=int,
                     action='store')
+parser.add_argument('--continue_training',
+                    default=True,
+                    type=int,
+                    action='store')
 parser.add_argument('--device',
                     default=None,
                     type=none_or_str,
