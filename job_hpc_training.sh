@@ -19,4 +19,5 @@ python run_training.py \
     --lm_name dmis-lab/biobert-large-cased-v1.1 \
     --lm_emb_dim 1024 \
     --device cuda \
+    --continue_training 0 \
     --log_to_file 1
