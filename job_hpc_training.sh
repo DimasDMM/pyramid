@@ -7,7 +7,7 @@ python run_training.py \
     --wv_file ./data/glove.6B.200d.txt \
     --dataset genia \
     --eval_on_training 0 \
-    --max_epoches 20 \
+    --max_epoches 500 \
     --total_layers 16 \
     --batch_size 64 \
     --token_emb_dim 200 \
