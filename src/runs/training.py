@@ -179,7 +179,7 @@ def run_training(logger, config: Config):
 
         if config.max_steps != -1 and config.max_steps <= step:
             break
-        elif step % 50 == 0:
+        elif step % 20 == 0:
             logger.info('Saving model (current state)...')
             save_model_objects(net, config, word2id, char2id, entity_idx)
     
