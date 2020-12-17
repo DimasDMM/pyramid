@@ -7,18 +7,17 @@ class Config:
         model_ckpt='./artifacts/genia/',
         dataset='genia',
         eval_on_training=False,
-        token_emb_dim=100,
-        char_emb_dim=100,
+        token_emb_dim=200,
+        char_emb_dim=60,
         hidden_dim=100,
         total_layers=16,
         batch_size=64,
         max_steps=1e9,
-        max_epoches=100,
-        dropout=0.4,
-        wv_file='./data/glove.6B.100d.txt',
-        freeze_wv=True,
-        lm_emb_dim=768,
-        lm_name='dmis-lab/biobert-v1.1',
+        max_epoches=500,
+        dropout=0.45,
+        wv_file='./data/glove.6B.200d.txt',
+        lm_emb_dim=1024,
+        lm_name='dmis-lab/biobert-large-cased-v1.1',
         continue_training=True,
         device=None,
         *args,
@@ -37,7 +36,6 @@ class Config:
         self.max_epoches = max_epoches
         self.dropout = dropout
         self.wv_file = wv_file
-        self.freeze_wv = freeze_wv
         self.lm_emb_dim = lm_emb_dim
         self.lm_name = lm_name
         self.continue_training = continue_training

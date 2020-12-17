@@ -25,7 +25,7 @@ class CharInput:
         self.uncased = uncased
         self.char2id = char2id
 
-    def encode(self, tok_text, padding_length=512, char_padding=100, unk='[UNK]', pad='[PAD]'):
+    def encode(self, tok_text, padding_length=512, char_padding=60, unk='[UNK]', pad='[PAD]'):
         if self.uncased:
             tok_text = [w.lower() for w in tok_text]
 

@@ -3,7 +3,7 @@ import torch.nn as nn
 from transformers import BertModel
 
 class CharEncoder(nn.Module):
-    def __init__(self, char2id, dimension=100, hidden_size=100, device=None):
+    def __init__(self, char2id, dimension=60, hidden_size=100, device=None):
         super().__init__()
         self.device = device
         self.embedding = self._create_emb_layer(True, shape=(len(char2id), dimension)).to(device=device)
@@ -68,8 +68,8 @@ class LMEncoder(nn.Module):
         return x
 
 class EncoderLayer(nn.Module):
-    def __init__(self, lm_name, word_embeddings, char2id, char_dimension=100, word_dimension=100,
-                 lm_dimension=768, hidden_size=100, drop_rate=0.4, device=None):
+    def __init__(self, lm_name, word_embeddings, char2id, char_dimension=60, word_dimension=200,
+                 lm_dimension=1024, hidden_size=100, drop_rate=0.45, device=None):
         super(EncoderLayer, self).__init__()
         
         self.device = device

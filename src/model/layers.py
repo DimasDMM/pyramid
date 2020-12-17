@@ -3,7 +3,7 @@ import torch.nn as nn
 from .encoders import *
 
 class DecodingLayer(nn.Module):
-    def __init__(self, drop_rate=0.4, seq_length=512, hidden_size=100, device=None):
+    def __init__(self, drop_rate=0.45, seq_length=512, hidden_size=100, device=None):
         super(DecodingLayer, self).__init__()
         self.device = device
         
@@ -29,7 +29,7 @@ class DecodingLayer(nn.Module):
         return h, x
 
 class PyramidLayer(nn.Module):
-    def __init__(self, total_layers=16, drop_rate=0.4, seq_length=512, hidden_size=100, device=None):
+    def __init__(self, total_layers=16, drop_rate=0.45, seq_length=512, hidden_size=100, device=None):
         super(PyramidLayer, self).__init__()
         self.device = device
         self.total_layers = total_layers
@@ -47,7 +47,7 @@ class PyramidLayer(nn.Module):
         return h
 
 class InverseDecodingLayer(nn.Module):
-    def __init__(self, drop_rate=0.4, seq_length=512, hidden_size=100, device=None):
+    def __init__(self, drop_rate=0.45, seq_length=512, hidden_size=100, device=None):
         super(InverseDecodingLayer, self).__init__()
         self.device = device
         
@@ -75,7 +75,7 @@ class InverseDecodingLayer(nn.Module):
         return h, x
 
 class InversePyramidLayer(nn.Module):
-    def __init__(self, total_layers=16, drop_rate=0.4, seq_length=512, hidden_size=100, device=None):
+    def __init__(self, total_layers=16, drop_rate=0.45, seq_length=512, hidden_size=100, device=None):
         super(InversePyramidLayer, self).__init__()
         self.device = device
         self.total_layers = total_layers
@@ -102,9 +102,9 @@ class InversePyramidLayer(nn.Module):
         return h
 
 class PyramidNet(nn.Module):
-    def __init__(self, embedding_matrix, char_vocab, lm_name='dmis-lab/biobert-v1.1', total_layers=16,
-                 drop_rate=0.4, seq_length=512, char_dimension=100, word_dimension=100,
-                 lm_dimension=768, hidden_size=100, total_classes=10, device=None):
+    def __init__(self, embedding_matrix, char_vocab, lm_name='dmis-lab/biobert-large-cased-v1.1',
+                 total_layers=16, drop_rate=0.45, seq_length=512, char_dimension=60, word_dimension=200,
+                 lm_dimension=1024, hidden_size=100, total_classes=10, device=None):
         super(PyramidNet, self).__init__()
         self.device = device
         

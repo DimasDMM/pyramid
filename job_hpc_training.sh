@@ -14,8 +14,7 @@ python run_training.py \
     --char_emb_dim 100 \
     --cased 0 \
     --hidden_dim 100 \
-    --dropout 0.4 \
-    --freeze_wv 1 \
+    --dropout 0.45 \
     --lm_name dmis-lab/biobert-large-cased-v1.1 \
     --lm_emb_dim 1024 \
     --device cuda \
