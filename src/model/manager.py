@@ -35,6 +35,7 @@ def load_model_objects(logger, model_ckpt, dataset, device):
     total_classes = len(entity_idx)
     net = PyramidNet(embedding_matrix, char2id, lm_name=model_params.lm_name, total_layers=model_params.total_layers,
                      drop_rate=model_params.dropout, seq_length=512, lm_dimension=model_params.lm_emb_dim,
+                     char_dimension=model_params.char_emb_dim, word_dimension=model_params.token_emb_dim,
                      total_classes=total_classes, device=device)
 
     # Load model weights and config params
