@@ -179,27 +179,15 @@ def run_training(logger, config: Config):
 
         if config.max_steps != -1 and config.max_steps <= step:
             break
+        elif step % 50 == 0:
+            logger.info('Saving model (current state)...')
+            save_model_objects(net, config, word2id, char2id, entity_idx)
     
     logger.info('End training')
 
     # Save model
     logger.info('Saving model...')
-
-    if not os.path.exists(config.model_ckpt):
-        os.makedirs(config.model_ckpt)
-
-    filepath = '%s%s_model.pt' % (config.model_ckpt, config.dataset)
-    torch.save(net.state_dict(), filepath)
-    
-    model_config = {
-        'config': config,
-        'word2id': word2id,
-        'char2id': char2id,
-        'entity_idx': entity_idx,
-    }
-    filepath = '%s%s_config.pickle' % (config.model_ckpt, config.dataset)
-    with open(filepath, 'wb') as fp:
-        pickle.dump(model_config, fp, protocol=pickle.HIGHEST_PROTOCOL)
+    save_model_objects(net, config, word2id, char2id, entity_idx)
 
     logger.info('Done')
 
