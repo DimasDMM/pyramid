@@ -49,6 +49,9 @@ def run_training(logger, config: Config):
         net, config, word2id, char2id, entity_idx = load_model_objects(
                 logger, config.model_ckpt, config.dataset, config.device)
         entity_dict = {x:i for i, x in enumerate(entity_idx)}
+
+        # Set model to training mode
+        net.train()
         
         # Transform format of nested entities
         logger.info('Building layer outputs...')
