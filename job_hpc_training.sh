@@ -6,7 +6,6 @@ python run_training.py \
     --model_ckpt ./artifacts/genia/ \
     --wv_file ./data/glove.6B.200d.txt \
     --dataset genia \
-    --eval_on_training 0 \
     --max_epoches 500 \
     --total_layers 16 \
     --batch_size 64 \

@@ -6,7 +6,6 @@ class Config:
         cased=False,
         model_ckpt='./artifacts/genia/',
         dataset='genia',
-        eval_on_training=False,
         token_emb_dim=200,
         char_emb_dim=60,
         hidden_dim=100,
@@ -20,13 +19,13 @@ class Config:
         lm_name='dmis-lab/biobert-large-cased-v1.1',
         continue_training=True,
         device=None,
+        f1_score=0.,
         *args,
         **kargs,
     ):
         self.cased = cased
         self.model_ckpt = model_ckpt
         self.dataset = dataset
-        self.eval_on_training = eval_on_training
         self.token_emb_dim = token_emb_dim
         self.char_emb_dim = char_emb_dim
         self.hidden_dim = hidden_dim
@@ -40,6 +39,7 @@ class Config:
         self.lm_name = lm_name
         self.continue_training = continue_training
         self.device = device
+        self.f1_score = f1_score
         
     def __call__(self, **kargs):
         obj = copy.copy(self)

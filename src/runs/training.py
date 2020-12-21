@@ -21,6 +21,7 @@ def run_training(logger, config: Config):
     # Set up step
     logger.info('== SET UP ==')
 
+    best_f1 = 0.
     if config.device is None:
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         torch.cuda.empty_cache()
@@ -49,9 +50,8 @@ def run_training(logger, config: Config):
         net, config, word2id, char2id, entity_idx = load_model_objects(
                 logger, config.model_ckpt, config.dataset, config.device)
         entity_dict = {x:i for i, x in enumerate(entity_idx)}
-
-        # Set model to training mode
-        net.train()
+        if hasattr(config, 'f1_score'):
+            best_f1 = config.f1_score
         
         # Transform format of nested entities
         logger.info('Building layer outputs...')
@@ -115,6 +115,9 @@ def run_training(logger, config: Config):
     for i_epoch in range(config.max_epoches):
         run_loss = 0
 
+        # Set model to training mode
+        net.train()
+
         for i_batch, batch_data in enumerate(train_dataloader):
             step += 1
 
@@ -172,27 +175,25 @@ def run_training(logger, config: Config):
         history.append(run_loss / len(train_dataloader))
         logger.info("Epoch %d of %d | Loss = %.3f" % (i_epoch + 1, config.max_epoches,
                                                       run_loss / len(train_dataloader)))
+
+        logger.info('Evaluating model with val. dataset...')
+        net.eval() # Set model to eval mode
+        eval_scores = evaluate(
+                net, dataloader=valid_dataloader, device=config.device,
+                total_layers=config.total_layers, entity_idx=entity_idx)
+        logger.info('Val. Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
+                eval_scores['precision'], eval_scores['recall'], eval_scores['f1']))
         
-        if config.eval_on_training:
-            logger.info('Evaluating model with val. dataset...')
-            eval_scores = evaluate(net, dataloader=valid_dataloader, device=config.device,
-                                total_layers=config.total_layers, entity_idx=entity_idx)
-            logger.info('Val. Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
-                        eval_scores['precision'], eval_scores['recall'], eval_scores['f1']))
+        if eval_scores['f1'] > best_f1:
+            logger.info('F1 Score Improved! Saving model...')
+            best_f1 = eval_scores['f1']
+            config.f1_score = best_f1
+            save_model_objects(net, config, word2id, char2id, entity_idx)
 
         if config.max_steps != -1 and config.max_steps <= step:
             break
-        elif step % 20 == 0:
-            logger.info('Saving model (current state)...')
-            save_model_objects(net, config, word2id, char2id, entity_idx)
     
     logger.info('End training')
-
-    # Save model
-    logger.info('Saving model...')
-    save_model_objects(net, config, word2id, char2id, entity_idx)
-
-    logger.info('Done')
 
 def adjust_lr(optimizer, step, decay_rate=0.05, decay_steps=1000, inital_lr=0.01):
     """
