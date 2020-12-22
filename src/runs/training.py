@@ -181,8 +181,8 @@ def run_training(logger, config: Config):
         eval_scores = evaluate(
                 net, dataloader=valid_dataloader, device=config.device,
                 total_layers=config.total_layers, entity_idx=entity_idx)
-        logger.info('Val. Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
-                eval_scores['precision'], eval_scores['recall'], eval_scores['f1']))
+        logger.info('Val. Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f | Best: %.4f' % (
+                eval_scores['precision'], eval_scores['recall'], eval_scores['f1'], best_f1))
         
         if eval_scores['f1'] > best_f1:
             logger.info('F1 Score Improved! Saving model...')
