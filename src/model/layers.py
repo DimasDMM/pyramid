@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from . import *
 from .encoders import *
 
 class DecodingLayer(nn.Module):
@@ -13,7 +14,9 @@ class DecodingLayer(nn.Module):
         
         self.lstm = nn.LSTM(input_size=hidden_size*2, hidden_size=hidden_size, bidirectional=True, batch_first=True).to(device=device)
         self.conv = nn.Conv1d(in_channels=hidden_size*2, out_channels=hidden_size*2, kernel_size=2, stride=1).to(device=device)
-    
+        
+        init_lstm(self.lstm)
+
     def forward(self, input):
         x = self.norm(input)
         x = self.dropout_1(x)
@@ -57,7 +60,9 @@ class InverseDecodingLayer(nn.Module):
         
         self.lstm = nn.LSTM(input_size=hidden_size*2, hidden_size=hidden_size, bidirectional=True, batch_first=True).to(device=device)
         self.conv = nn.Conv1d(in_channels=hidden_size*4, out_channels=hidden_size*2, kernel_size=2, padding=1, stride=1).to(device=device)
-    
+        
+        init_lstm(self.lstm)
+
     def forward(self, input_h, input_x):
         x = self.norm(input_x)
         x = self.dropout_1(x)
@@ -95,7 +100,6 @@ class InversePyramidLayer(nn.Module):
         
         for i, layer in reverse_enumerate(self.idecoding_layers):
             h_layer, x_layer = layer(input_hs[i], x_layer)
-            #x_layer = torch.cat((x_pad, x_layer), dim=1)
             h.append(h_layer)
         
         h.reverse()

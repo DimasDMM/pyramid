@@ -20,6 +20,7 @@ class Config:
         continue_training=True,
         device=None,
         f1_score=0.,
+        current_epoch=0,
         *args,
         **kargs,
     ):
@@ -40,6 +41,7 @@ class Config:
         self.continue_training = continue_training
         self.device = device
         self.f1_score = f1_score
+        self.current_epoch = current_epoch
         
     def __call__(self, **kargs):
         obj = copy.copy(self)

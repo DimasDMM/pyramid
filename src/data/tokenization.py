@@ -3,9 +3,9 @@ import re
 from tokenizers import BertWordPieceTokenizer
 from transformers import BertTokenizer
 
-def get_tokenizer(lm_name='dmis-lab/biobert-large-cased-v1.1', lowercase=True):
-    lm_path = './artifacts/%s/' % lm_name
-    tokenizer = BertWordPieceTokenizer('%svocab.txt' % lm_path, lowercase=lowercase)
+def get_tokenizer(artifacts_path='./artifacts/', lm_name='dmis-lab/biobert-large-cased-v1.1', lowercase=True):
+    save_path = '%s%s/' % (artifacts_path, lm_name)
+    tokenizer = BertWordPieceTokenizer('%svocab.txt' % save_path, lowercase=True)
     return tokenizer
 
 def tokenize_text(tokenizer, text, lowercase=True):

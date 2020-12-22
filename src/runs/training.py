@@ -114,6 +114,8 @@ def run_training(logger, config: Config):
 
     for i_epoch in range(config.max_epoches):
         run_loss = 0
+        i_epoch += config.current_epoch
+        config.current_epoch = i_epoch
 
         # Set model to training mode
         net.train()
