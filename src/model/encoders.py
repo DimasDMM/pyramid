@@ -19,9 +19,8 @@ class CharEncoder(nn.Module):
         
         outputs = []
         for seq in x:
-            _, (h, _) = self.lstm(seq)
-            x_hidden = torch.cat([h[-2,:,:], h[-1,:,:]], dim=-1)
-            outputs.append(x_hidden)
+            x_output, _ = self.lstm(seq)
+            outputs.append(x_output[:, -1])
 
         return torch.stack(outputs).to(device=self.device)
 
