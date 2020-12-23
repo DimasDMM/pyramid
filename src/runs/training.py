@@ -111,11 +111,12 @@ def run_training(logger, config: Config):
     n_batches = len(train_dataloader)
 
     logger.info('Start training')
+    starting_epoch = config.current_epoch
 
-    for i_epoch in range(config.max_epoches):
+    for _ in range(config.max_epoches):
         run_loss = 0
-        i_epoch += config.current_epoch
-        config.current_epoch = i_epoch
+        i_epoch = config.current_epoch
+        config.current_epoch += 1
 
         # Set model to training mode
         net.train()
