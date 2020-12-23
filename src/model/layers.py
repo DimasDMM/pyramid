@@ -15,7 +15,7 @@ class DecodingLayer(nn.Module):
         self.lstm = nn.LSTM(input_size=hidden_size*2, hidden_size=hidden_size, bidirectional=True, batch_first=True).to(device=device)
         self.conv = nn.Conv1d(in_channels=hidden_size*2, out_channels=hidden_size*2, kernel_size=2, stride=1).to(device=device)
         
-        init_lstm(self.lstm)
+        #init_lstm(self.lstm)
 
     def forward(self, input):
         x = self.norm(input)
@@ -61,7 +61,7 @@ class InverseDecodingLayer(nn.Module):
         self.lstm = nn.LSTM(input_size=hidden_size*2, hidden_size=hidden_size, bidirectional=True, batch_first=True).to(device=device)
         self.conv = nn.Conv1d(in_channels=hidden_size*4, out_channels=hidden_size*2, kernel_size=2, padding=1, stride=1).to(device=device)
         
-        init_lstm(self.lstm)
+        #init_lstm(self.lstm)
 
     def forward(self, input_h, input_x):
         x = self.norm(input_x)

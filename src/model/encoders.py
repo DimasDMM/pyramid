@@ -8,19 +8,20 @@ class CharEncoder(nn.Module):
         self.device = device
         
         self.embedding = create_emb_layer(True, shape=(len(char2id), dimension), device=device)
-        init_embeddings(self.embedding.weight)
+        #init_embeddings(self.embedding.weight)
         
         self.lstm = nn.LSTM(input_size=dimension, hidden_size=hidden_size,
                             bidirectional=True, batch_first=True).to(device=device)
-        init_lstm(self.lstm)
+        #init_lstm(self.lstm)
         
     def forward(self, inputs):
         x = self.embedding(inputs)
         
         outputs = []
         for seq in x:
-            x_output, _ = self.lstm(seq)
-            outputs.append(x_output[:, -1])
+            _, (h, _) = self.lstm(seq)
+            x_hidden = torch.cat([h[-2,:,:], h[-1,:,:]], dim=-1)
+            outputs.append(x_hidden)
 
         return torch.stack(outputs).to(device=self.device)
 
@@ -77,14 +78,14 @@ class EncoderLayer(nn.Module):
 
         self.lstm_char = nn.LSTM(input_size=char_dimension, hidden_size=hidden_size,
                                  bidirectional=True, batch_first=True).to(device=device)
-        init_lstm(self.lstm_char)
+        #init_lstm(self.lstm_char)
         
         self.lstm_enc = nn.LSTM(input_size=(hidden_size*2 + word_dimension),
                                 hidden_size=hidden_size, bidirectional=True, batch_first=True).to(device=device)
-        init_lstm(self.lstm_enc)
+        #init_lstm(self.lstm_enc)
         
         self.linear = nn.Linear(lm_dimension + hidden_size*2, hidden_size*2).to(device=device)
-        init_linear(self.linear)
+        #init_linear(self.linear)
 
     def forward(self, input_word, input_char, input_lm, input_lm_attention, input_lm_type_ids,
                 input_lm_spans, input_masks):
