@@ -1,11 +1,11 @@
 
 class WordInput:
-    def __init__(self, word2id, uncased=False):
-        self.uncased = uncased
+    def __init__(self, word2id, lowercase=True):
         self.word2id = word2id
+        self.lowercase = lowercase
         
-    def encode(self, tok_text, padding_length=512, unk='[UNK]', pad='[PAD]'):
-        if self.uncased:
+    def encode(self, tok_text, padding_length=512, unk='<unk>', pad='<pad>'):
+        if self.lowercase:
             tok_text = [w.lower() for w in tok_text]
 
         input_ids = [self.word2id[word] if word in self.word2id else self.word2id[unk] for word in tok_text]
@@ -21,12 +21,12 @@ class WordInput:
         return input_ids
 
 class CharInput:
-    def __init__(self, char2id, uncased=False):
-        self.uncased = uncased
+    def __init__(self, char2id, lowercase=True):
         self.char2id = char2id
+        self.lowercase = lowercase
 
-    def encode(self, tok_text, padding_length=512, char_padding=60, unk='[UNK]', pad='[PAD]'):
-        if self.uncased:
+    def encode(self, tok_text, padding_length=512, char_padding=60, unk='<unk>', pad='<pad>'):
+        if self.lowercase:
             tok_text = [w.lower() for w in tok_text]
 
         input_ids = []
@@ -55,10 +55,14 @@ class CharInput:
         return input_ids
 
 class BertInput:
-    def __init__(self, tokenizer):
+    def __init__(self, tokenizer, lowercase=True):
         self.tokenizer = tokenizer
+        self.lowercase = lowercase
 
     def encode(self, tok_text, padding_length=512):
+        if self.lowercase:
+            tok_text = [w.lower() for w in tok_text]
+
         tok_text = ['[CLS]'] + tok_text + ['[SEP]']
         
         # Encode context (token IDs, mask and token types)

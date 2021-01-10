@@ -39,9 +39,9 @@ def run_evaluator(logger, config: Config):
 
     # Create tokenizer and data inputs
     logger.info('Loading tokenizer and data inputs...')
-    tokenizer = get_tokenizer(lm_name=model_params.lm_name, lowercase=(not model_params.cased))
-    word_input = WordInput(word2id)
-    char_input = CharInput(char2id)
+    tokenizer = get_tokenizer(lm_name=model_params.lm_name, lowercase=(not model_params.cased_lm))
+    word_input = WordInput(word2id, lowercase=(not model_params.cased_word))
+    char_input = CharInput(char2id, lowercase=(not model_params.cased_char))
     bert_input = BertInput(tokenizer)
 
     # Transform format of nested entities

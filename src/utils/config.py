@@ -3,7 +3,6 @@ import copy
 class Config:
     def __init__(
         self,
-        cased=False,
         model_ckpt='./artifacts/genia/',
         dataset='genia',
         token_emb_dim=200,
@@ -17,6 +16,9 @@ class Config:
         wv_file='./data/glove.6B.200d.txt',
         lm_emb_dim=1024,
         lm_name='dmis-lab/biobert-large-cased-v1.1',
+        cased_lm=False,
+        cased_word=False,
+        cased_char=False,
         continue_training=True,
         device=None,
         f1_score=0.,
@@ -24,7 +26,6 @@ class Config:
         *args,
         **kargs,
     ):
-        self.cased = cased
         self.model_ckpt = model_ckpt
         self.dataset = dataset
         self.token_emb_dim = token_emb_dim
@@ -38,6 +39,9 @@ class Config:
         self.wv_file = wv_file
         self.lm_emb_dim = lm_emb_dim
         self.lm_name = lm_name
+        self.cased_lm = cased_lm
+        self.cased_word = cased_word
+        self.cased_char = cased_char
         self.continue_training = continue_training
         self.device = device
         self.f1_score = f1_score
