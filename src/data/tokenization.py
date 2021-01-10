@@ -5,7 +5,7 @@ from transformers import BertTokenizer
 
 def get_tokenizer(artifacts_path='./artifacts/', lm_name='dmis-lab/biobert-large-cased-v1.1', lowercase=True):
     save_path = '%s%s/' % (artifacts_path, lm_name)
-    tokenizer = BertWordPieceTokenizer('%svocab.txt' % save_path, lowercase=True)
+    tokenizer = BertWordPieceTokenizer('%svocab.txt' % save_path, lowercase=lowercase)
     return tokenizer
 
 def tokenize_text(tokenizer, text, lowercase=True):
