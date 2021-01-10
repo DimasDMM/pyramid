@@ -63,7 +63,15 @@ parser.add_argument('--char_emb_dim',
                     default=100,
                     type=int,
                     action='store')
-parser.add_argument('--cased',
+parser.add_argument('--cased_lm',
+                    default=False,
+                    type=int,
+                    action='store')
+parser.add_argument('--cased_word',
+                    default=False,
+                    type=int,
+                    action='store')
+parser.add_argument('--cased_char',
                     default=False,
                     type=int,
                     action='store')

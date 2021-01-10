@@ -11,7 +11,9 @@ python run_training.py \
     --batch_size 64 \
     --token_emb_dim 200 \
     --char_emb_dim 100 \
-    --cased 0 \
+    --cased_lm 0 \
+    --cased_word 0 \
+    --cased_char 0 \
     --hidden_dim 100 \
     --dropout 0.45 \
     --lm_name dmis-lab/biobert-large-cased-v1.1 \
