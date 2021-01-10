@@ -69,9 +69,9 @@ def run_training(logger, config: Config):
 
         # Load embeddings and build vocabularies
         logger.info('Loading embeddings...')
-        special_tokens = ['[UNK]', '[PAD]', '[CLS]', '[SEP]', '[MASK]']
-        embedding_matrix, id2word, word2id = load_embedding_matrix(config.wv_file, config.token_emb_dim, special_tokens)
-        id2char, char2id = build_char_vocab(train_dataset, special_tokens=special_tokens)
+        special_tokens = ['[UNK]', '[PAD]', '[CLS]', '[SEP]', '[MASK]', '<unk>', '<pad>']
+        embedding_matrix, _, word2id = load_embedding_matrix(config.wv_file, config.token_emb_dim, special_tokens)
+        _, char2id = build_char_vocab(train_dataset, special_tokens=special_tokens)
 
         # Build model
         logger.info('Building model...')
