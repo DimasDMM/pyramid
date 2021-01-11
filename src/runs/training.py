@@ -86,7 +86,7 @@ def run_training(logger, config: Config):
     tokenizer = get_tokenizer(lm_name=config.lm_name, lowercase=(not config.cased_lm))
     word_input = WordInput(word2id, lowercase=(not config.cased_word))
     char_input = CharInput(char2id, lowercase=(not config.cased_char))
-    bert_input = BertInput(tokenizer)
+    bert_input = BertInput(tokenizer, lowercase=(not config.cased_lm))
 
     # Data loaders
     logger.info('Creating data loaders...')
