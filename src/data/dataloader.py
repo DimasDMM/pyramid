@@ -7,6 +7,8 @@ class NestedNamedEntitiesDataset(Dataset):
         self.total_layers = total_layers
         self.has_outputs = has_outputs
         
+        self.doc_ids = []
+        self.tokens = []
         self.masks = []
         self.X_word = []
         self.X_char = []
@@ -29,6 +31,8 @@ class NestedNamedEntitiesDataset(Dataset):
                 mask = [1.] * len(item['tokens']) + [0.] * (padding_length - len(item['tokens']))
                 self.masks.append(mask)
                 
+                self.doc_ids.append(item['doc_id'])
+                self.tokens.append(item['tokens'])
                 self.X_word.append(x_word)
                 self.X_char.append(x_char)
 
@@ -88,5 +92,11 @@ class NestedNamedEntitiesDataset(Dataset):
     def get_item(self, idx):
         return self.__getitem__(idx)
     
+    def get_doc_id(self, idx):
+        return self.doc_ids[idx]
+    
+    def get_tokens(self, idx):
+        return self.tokens[idx]
+
     def get_n_skipped(self):
         return self.n_skipped

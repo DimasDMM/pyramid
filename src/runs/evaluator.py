@@ -32,9 +32,16 @@ def run_evaluator(logger, config: Config):
             logger, config.model_ckpt, config.dataset, config.device)
     
     logger.info('Loading dataset...')
+
+    valid_file = './data/valid.%s.json' % config.dataset
+    with open(valid_file, 'r') as fp:
+        valid_dataset = json.load(fp)
+    logger.info('Loaded valid dataset size: %d' % len(valid_dataset))
+
     test_file = './data/test.%s.json' % config.dataset
     with open(test_file, 'r') as fp:
         test_dataset = json.load(fp)
+
     logger.info('Loaded test dataset size: %d' % len(test_dataset))
 
     # Create tokenizer and data inputs
@@ -42,14 +49,19 @@ def run_evaluator(logger, config: Config):
     tokenizer = get_tokenizer(lm_name=model_params.lm_name, lowercase=(not model_params.cased_lm))
     word_input = WordInput(word2id, lowercase=(not model_params.cased_word))
     char_input = CharInput(char2id, lowercase=(not model_params.cased_char))
-    bert_input = BertInput(tokenizer)
+    bert_input = BertInput(tokenizer, lowercase=(not model_params.cased_char))
 
     # Transform format of nested entities
     logger.info('Building layer outputs...')
     entity_dict = {x:i for i, x in enumerate(entity_idx)}
+    valid_dataset, _ = add_layer_outputs(valid_dataset, total_layers=model_params.total_layers, entity_dict=entity_dict)
     test_dataset, _ = add_layer_outputs(test_dataset, total_layers=model_params.total_layers, entity_dict=entity_dict)
 
     logger.info('Creating data loader...')
+    nne_valid_dataset = NestedNamedEntitiesDataset(
+            valid_dataset, word_input, char_input, bert_input, total_layers=model_params.total_layers,
+            skip_exceptions=False, max_items=-1, padding_length=512)
+    
     nne_test_dataset = NestedNamedEntitiesDataset(
             test_dataset, word_input, char_input, bert_input, total_layers=model_params.total_layers,
             skip_exceptions=False, max_items=-1, padding_length=512)
@@ -61,5 +73,15 @@ def run_evaluator(logger, config: Config):
                            total_layers=model_params.total_layers, entity_idx=entity_idx)
     logger.info('Test Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
                 eval_scores['precision'], eval_scores['recall'], eval_scores['f1']))
+    
+    # Store predictions
+    logger.info('Saving predictions as JSON file...')
+    logger.info('- Validation set...')
+    evaluate_save(net, nne_valid_dataset, config.device, entity_idx, total_layers=model_params.total_layers,
+                  output_filepath='./artifacts/valid_predictions.json')
+                  
+    logger.info('- Test set...')
+    evaluate_save(net, nne_test_dataset, config.device, entity_idx, total_layers=model_params.total_layers,
+                  output_filepath='./artifacts/test_predictions.json')
 
     logger.info('Done')

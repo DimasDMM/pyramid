@@ -1,7 +1,6 @@
 import json
 import gc
 import os
-import pickle
 import torch
 from torch.utils.data import DataLoader
 
@@ -50,8 +49,7 @@ def run_training(logger, config: Config):
         net, config, word2id, char2id, entity_idx = load_model_objects(
                 logger, config.model_ckpt, config.dataset, config.device)
         entity_dict = {x:i for i, x in enumerate(entity_idx)}
-        if hasattr(config, 'f1_score'):
-            best_f1 = config.f1_score
+        best_f1 = config.f1_score
         
         # Transform format of nested entities
         logger.info('Building layer outputs...')
@@ -106,12 +104,10 @@ def run_training(logger, config: Config):
     optimizer = torch.optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
     gradient_clip = 5.
 
-    history = []
     step = 0
     n_batches = len(train_dataloader)
 
     logger.info('Start training')
-    starting_epoch = config.current_epoch
 
     for _ in range(config.max_epoches):
         run_loss = 0
@@ -175,7 +171,6 @@ def run_training(logger, config: Config):
                 gc.collect()
                 torch.cuda.empty_cache()
 
-        history.append(run_loss / len(train_dataloader))
         logger.info("Epoch %d of %d | Loss = %.3f" % (i_epoch + 1, config.max_epoches,
                                                       run_loss / len(train_dataloader)))
 

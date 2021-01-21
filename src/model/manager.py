@@ -28,7 +28,7 @@ def load_model_objects(logger, model_ckpt, dataset, device):
 
     # Load embeddings and build vocabularies
     logger.info('Loading embeddings...')
-    special_tokens = ['[UNK]', '[PAD]', '[CLS]', '[SEP]', '[MASK]']
+    special_tokens = ['[UNK]', '[PAD]', '[CLS]', '[SEP]', '[MASK]', '<unk>', '<pad>']
     embedding_matrix, _, _ = load_embedding_matrix(model_params.wv_file, model_params.token_emb_dim, special_tokens)
 
     # Build base model without trained weights

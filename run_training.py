@@ -35,10 +35,6 @@ parser.add_argument('--dataset',
                     default='genia',
                     type=str,
                     action='store')
-parser.add_argument('--eval_on_training',
-                    default=False,
-                    type=int,
-                    action='store')
 parser.add_argument('--total_layers',
                     default=16,
                     type=int,

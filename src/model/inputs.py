@@ -25,7 +25,7 @@ class CharInput:
         self.char2id = char2id
         self.lowercase = lowercase
 
-    def encode(self, tok_text, padding_length=512, char_padding=60, unk='<unk>', pad='<pad>'):
+    def encode(self, tok_text, padding_length=512, char_padding=128, unk='<unk>', pad='<pad>'):
         if self.lowercase:
             tok_text = [w.lower() for w in tok_text]
 
