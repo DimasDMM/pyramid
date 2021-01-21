@@ -2,7 +2,11 @@
 
 ## Introduction
 
-TODO
+Pyramid is a novel layered model for Nested Named Entity Recognition (nested NER). This code is based in the paper *Pyramid: A Layered Model for Nested Named Entity Recognition* by Jue Wang et al.
+
+Note that this code is based in my own understanding of the paper. Nevertheless, the authors released the code of the paper at https://github.com/LorrinWWW/Pyramid/.
+
+This repository also contains a step-by-step execution in the notebooks contained in the folder [notebooks](./notebooks).
 
 ## Set up
 
@@ -23,7 +27,7 @@ unzip glove.6B.zip
 cd ..
 ```
 
-It is necessary that you download the tokenizer and pretrained LM beforehand:
+It is necessary that you also download the tokenizer and pretrained LM beforehand:
 ```sh
 python run_download_lm.py --lm_name dmis-lab/biobert-v1.1 --log_to_file 0
 ```
@@ -47,13 +51,14 @@ python run_preprocess.py \
 
 ## Commands
 
-Run model training:
+Fine-tune model:
 ```sh
 python run_training.py \
     --model_ckpt ./artifacts/genia/ \
     --wv_file ./data/glove.6B.200d.txt \
     --dataset genia \
     --max_epoches 500 \
+    --max_steps 1e9 \
     --total_layers 16 \
     --batch_size 64 \
     --token_emb_dim 200 \
@@ -70,11 +75,20 @@ python run_training.py \
     --log_to_file 1
 ```
 
-Run evaluation in a trained model:
+Once the model is fine-tunned, run the evaluation script:
 ```sh
 python run_evaluator.py \
     --model_ckpt ./artifacts/genia/ \
     --dataset genia \
     --device cuda \
+    --output_json ./artifacts/predictions.json \
     --log_to_file 0
 ```
+
+## Additional comments
+
+This repository includes sbatch files to run the scripts with Slurm. See: https://slurm.schedmd.com/.
+
+---
+
+Have fun! ᕙ (° ~ ° ~)
