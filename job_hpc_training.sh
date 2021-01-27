@@ -20,4 +20,4 @@ python run_training.py \
     --lm_emb_dim 1024 \
     --device cuda \
     --continue_training 0 \
-    --log_to_file 1
+    --log_to_file logger_genia.txt

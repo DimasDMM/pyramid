@@ -9,20 +9,10 @@ from src.utils.config import Config
 if __name__ != '__main__':
     exit(0)
 
-def none_or_str(value):
-    if value == 'None':
-        return None
-    return value
-
-def none_or_int(value):
-    if value == 'None':
-        return None
-    return int(value)
-
 parser = argparse.ArgumentParser(description='Arguments for preprocess.')
 parser.add_argument('--log_to_file',
-                    default=False,
-                    type=int,
+                    default=None,
+                    type=none_or_str,
                     action='store')
 parser.add_argument('--dataset',
                     type=str,
