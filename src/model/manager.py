@@ -17,14 +17,7 @@ def load_model_objects(logger, model_ckpt, dataset, device):
         word2id = model_config['word2id']
         char2id = model_config['char2id']
         entity_idx = model_config['entity_idx']
-
-    # Load datasets
-    logger.info('Loading test dataset...')
-
-    test_file = './data/test.%s.json' % dataset
-    with open(test_file, 'r') as fp:
-        test_dataset = json.load(fp)
-    logger.info('Loaded test dataset size: %d' % len(test_dataset))
+        logger.info(model_params.__dict__)
 
     # Load embeddings and build vocabularies
     logger.info('Loading embeddings...')
@@ -43,7 +36,6 @@ def load_model_objects(logger, model_ckpt, dataset, device):
     logger.info('Loading model weights...')
     filepath = '%s%s_model.pt' % (model_ckpt, dataset)
     net.load_state_dict(torch.load(filepath))
-    net.eval()
 
     return net, model_params, word2id, char2id, entity_idx
 
