@@ -45,8 +45,7 @@ python run_preprocess.py \
     --dataset genia \
     --raw_filepath "./data/GENIA/GENIA_term_3.02/GENIAcorpus3.02.xml" \
     --lm_name dmis-lab/biobert-v1.1 \
-    --cased 0 \
-    --log_to_file 0
+    --cased 0
 ```
 
 ## Commands
@@ -80,9 +79,7 @@ Once the model is fine-tunned, run the evaluation script:
 python run_evaluator.py \
     --model_ckpt ./artifacts/genia/ \
     --dataset genia \
-    --device cuda \
-    --output_json ./artifacts/predictions.json \
-    --log_to_file 0
+    --device cuda
 ```
 
 ## Additional comments
