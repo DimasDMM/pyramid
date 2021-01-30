@@ -17,6 +17,8 @@ from ..model.manager import *
 from ..utils.config import *
 
 def run_training(logger, config: Config):
+    logger.info(config.__dict__)
+
     # Set up step
     logger.info('== SET UP ==')
 
@@ -25,6 +27,7 @@ def run_training(logger, config: Config):
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         torch.cuda.empty_cache()
         torch.cuda.set_device(config.device)
+        config.device = device
 
     logger.info('Using device: %s' % config.device)
 
@@ -179,7 +182,7 @@ def run_training(logger, config: Config):
         eval_scores = evaluate(
                 net, dataloader=valid_dataloader, device=config.device,
                 total_layers=config.total_layers, entity_idx=entity_idx)
-        logger.info('Val. Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f | Best: %.4f' % (
+        logger.info('Dev Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f | Best: %.4f' % (
                 eval_scores['precision'], eval_scores['recall'], eval_scores['f1'], best_f1))
         
         if eval_scores['f1'] > best_f1:
