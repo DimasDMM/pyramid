@@ -87,15 +87,15 @@ def run_training(logger, config: Config):
     tokenizer = get_tokenizer(lm_name=config.lm_name, lowercase=(not config.cased_lm))
     word_input = WordInput(word2id, lowercase=(not config.cased_word))
     char_input = CharInput(char2id, lowercase=(not config.cased_char))
-    bert_input = BertInput(tokenizer, lowercase=(not config.cased_lm))
+    lm_input = LMInput(tokenizer, lowercase=(not config.cased_lm))
 
     # Data loaders
     logger.info('Creating data loaders...')
     nne_train_dataset = NestedNamedEntitiesDataset(
-            train_dataset, word_input, char_input, bert_input, total_layers=config.total_layers,
+            train_dataset, word_input, char_input, lm_input, total_layers=config.total_layers,
             skip_exceptions=False, max_items=-1, padding_length=512)
     nne_valid_dataset = NestedNamedEntitiesDataset(
-            valid_dataset, word_input, char_input, bert_input, total_layers=config.total_layers,
+            valid_dataset, word_input, char_input, lm_input, total_layers=config.total_layers,
             skip_exceptions=False, max_items=-1, padding_length=512)
     train_dataloader = DataLoader(nne_train_dataset, batch_size=config.batch_size, shuffle=False, num_workers=0)
     valid_dataloader = DataLoader(nne_valid_dataset, batch_size=config.batch_size, shuffle=False, num_workers=0)

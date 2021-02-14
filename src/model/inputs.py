@@ -54,7 +54,7 @@ class CharInput:
         
         return input_ids
 
-class BertInput:
+class LMInput:
     def __init__(self, tokenizer, lowercase=True):
         self.tokenizer = tokenizer
         self.lowercase = lowercase
@@ -64,6 +64,7 @@ class BertInput:
             tok_text = [w.lower() for w in tok_text]
 
         tok_text = ['[CLS]'] + tok_text + ['[SEP]']
+        pad_idx = self.tokenizer.convert_tokens_to_ids(self.tokenizer.pad_token)
         
         # Encode context (token IDs, mask and token types)
         token_spans = [1]
@@ -74,23 +75,23 @@ class BertInput:
             encoded_text = self.tokenizer.encode(token)
 
             # Create inputs
-            span = len(encoded_text.ids[1:-1])
+            span = len(encoded_text['input_ids'][1:-1])
             token_spans += [span] + [0] * (span - 1)
-            input_ids += encoded_text.ids[1:-1]
-            type_ids += encoded_text.type_ids[1:-1]
-            attention_mask += encoded_text.attention_mask[1:-1]
+            input_ids += encoded_text['input_ids'][1:-1]
+            type_ids += encoded_text['token_type_ids'][1:-1]
+            attention_mask += encoded_text['attention_mask'][1:-1]
         
         if len(input_ids) > padding_length:
-            raise Exception('(BERT) Text too long (%d / %d): %s' % (len(input_ids), padding_length, tok_text))
+            raise Exception('(LM) Text too long (%d / %d): %s' % (len(input_ids), padding_length, tok_text))
 
-        # Pad if necessary. Note that "100" is the ID of the token "[PAD]" in BERT.
+        # Pad if necessary. Note that "pad_idx" is the ID of the pad token in LM.
         add_padding = padding_length - len(input_ids)
         if add_padding > 0:
-            input_ids = input_ids + ([100] * add_padding)
+            input_ids = input_ids + ([pad_idx] * add_padding)
             attention_mask = attention_mask + ([0] * add_padding)
             type_ids = type_ids + ([0] * add_padding)
         
         token_spans += ([1] * (padding_length - len(token_spans)))
 
-        # BERT inputs must be as follows: input_ids, attention_mask, token_type_ids
+        # LM inputs must be as follows: input_ids, attention_mask, token_type_ids
         return [input_ids, attention_mask, type_ids], token_spans

@@ -24,7 +24,7 @@ def run_preprocess_genia(logger, filepath, cased, lm_name, no_entity='O'):
             c['entities'] = get_norm_entities(c['entities'])
             
             c['text'] = c['tokens']
-            c['tokens'], c['entities'] = transform_text_spans(c['tokens'], c['entities'],
+            c['tokens'], c['entities'], c['token_offsets'] = transform_text_spans(c['tokens'], c['entities'],
                                                               tokenizer, lowercase=(not cased))
 
         genia_data += child_data
@@ -40,7 +40,6 @@ def run_preprocess_genia(logger, filepath, cased, lm_name, no_entity='O'):
                 genia_et_freq[e['entity_type']] += 1
 
     genia_et = [no_entity] + list(genia_et_freq.keys())
-    genia_et_idx = {e:i for i, e in enumerate(genia_et)}
 
     # Sanity check
     logger.info('Running sanity check...')

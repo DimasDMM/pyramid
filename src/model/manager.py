@@ -10,7 +10,7 @@ from .layers import *
 
 def load_model_objects(logger, model_ckpt, dataset, device):
     logger.info('Loading config params...')
-    filepath = '%s%s_config.pickle' % (model_ckpt, dataset)
+    filepath = '%sconfig.pickle' % (model_ckpt)
     with open(filepath, 'rb') as fp:
         model_config = pickle.load(fp)
         model_params = model_config['config']
@@ -34,7 +34,7 @@ def load_model_objects(logger, model_ckpt, dataset, device):
 
     # Load model weights and config params
     logger.info('Loading model weights...')
-    filepath = '%s%s_model.pt' % (model_ckpt, dataset)
+    filepath = '%smodel.pt' % (model_ckpt)
     net.load_state_dict(torch.load(filepath))
 
     return net, model_params, word2id, char2id, entity_idx
@@ -43,7 +43,7 @@ def save_model_objects(net, config, word2id, char2id, entity_idx):
     if not os.path.exists(config.model_ckpt):
         os.makedirs(config.model_ckpt)
 
-    filepath = '%s%s_model.pt' % (config.model_ckpt, config.dataset)
+    filepath = '%smodel.pt' % (config.model_ckpt)
     torch.save(net.state_dict(), filepath)
 
     model_config = {
@@ -52,6 +52,6 @@ def save_model_objects(net, config, word2id, char2id, entity_idx):
         'char2id': char2id,
         'entity_idx': entity_idx,
     }
-    filepath = '%s%s_config.pickle' % (config.model_ckpt, config.dataset)
+    filepath = '%sconfig.pickle' % (config.model_ckpt)
     with open(filepath, 'wb') as fp:
         pickle.dump(model_config, fp, protocol=pickle.HIGHEST_PROTOCOL)

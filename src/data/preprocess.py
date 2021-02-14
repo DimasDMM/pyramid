@@ -23,18 +23,19 @@ def add_layer_outputs(dataset, total_layers=16, entity_dict=None):
     # Generate outputs of each layer
     last_layer = total_layers - 1
     for item in dataset:
-        for entity in item['entities']:
-            span_start = entity['span'][0]
-            span_end = entity['span'][1]
-            b_type_id = entity_dict['B-%s' % entity['entity_type']]
-            i_type_id = entity_dict['I-%s' % entity['entity_type']]
+        if 'entities' in item:
+            for entity in item['entities']:
+                span_start = entity['span'][0]
+                span_end = entity['span'][1]
+                b_type_id = entity_dict['B-%s' % entity['entity_type']]
+                i_type_id = entity_dict['I-%s' % entity['entity_type']]
 
-            length = span_end - span_start
-            if length >= total_layers:
-                item['layer_outputs'][last_layer][span_start] = b_type_id
-                item['layer_outputs'][last_layer][span_start+1:span_end+1] = [i_type_id]*(length)
-            else:
-                item['layer_outputs'][length][span_start] = b_type_id
+                length = span_end - span_start
+                if length >= total_layers:
+                    item['layer_outputs'][last_layer][span_start] = b_type_id
+                    item['layer_outputs'][last_layer][span_start+1:span_end+1] = [i_type_id]*(length)
+                else:
+                    item['layer_outputs'][length][span_start] = b_type_id
     
     return dataset, entity_dict
 

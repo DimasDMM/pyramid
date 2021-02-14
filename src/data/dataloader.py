@@ -7,8 +7,9 @@ class NestedNamedEntitiesDataset(Dataset):
         self.total_layers = total_layers
         self.has_outputs = has_outputs
         
-        self.doc_ids = []
-        self.tokens = []
+        self.item_id = []
+        self.texts = []
+        self.token_offsets = []
         self.masks = []
         self.X_word = []
         self.X_char = []
@@ -31,8 +32,15 @@ class NestedNamedEntitiesDataset(Dataset):
                 mask = [1.] * len(item['tokens']) + [0.] * (padding_length - len(item['tokens']))
                 self.masks.append(mask)
                 
-                self.doc_ids.append(item['doc_id'])
-                self.tokens.append(item['tokens'])
+                token_offsets = self._get_offsets_from_tokens(item['text'], item['tokens'])
+                self.token_offsets.append(token_offsets)
+
+                if 'item_id' in item:
+                    self.item_id.append(item['item_id'])
+                else:
+                    self.item_id.append(i)
+
+                self.texts.append(item['text'])
                 self.X_word.append(x_word)
                 self.X_char.append(x_char)
 
@@ -58,6 +66,18 @@ class NestedNamedEntitiesDataset(Dataset):
                     raise e
         
         self._init_tensors(padding_length, total_layers)
+
+    def _get_offsets_from_tokens(self, text, tokens):
+        offsets = []
+        last_span = 0
+        for token in tokens:
+            span_start = text.find(token, last_span)
+            if span_start == -1:
+                raise Exception('Token "%s" (start: %d) not found in text: %s' % (token, last_span, text))
+            span_end = span_start + len(token)
+            last_span = span_start
+            offsets.append((span_start, span_end))
+        return offsets
 
     def _init_tensors(self, padding_length, total_layers):
         self.masks = torch.tensor(self.masks, dtype=torch.float)
@@ -92,11 +112,14 @@ class NestedNamedEntitiesDataset(Dataset):
     def get_item(self, idx):
         return self.__getitem__(idx)
     
-    def get_doc_id(self, idx):
-        return self.doc_ids[idx]
+    def get_item_id(self, idx):
+        return self.item_id[idx]
     
-    def get_tokens(self, idx):
-        return self.tokens[idx]
+    def get_texts(self, idx):
+        return self.texts[idx]
+    
+    def get_token_offsets(self, idx):
+        return self.token_offsets[idx]
 
     def get_n_skipped(self):
         return self.n_skipped

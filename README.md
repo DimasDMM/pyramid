@@ -27,14 +27,16 @@ unzip glove.6B.zip
 cd ..
 ```
 
-It is necessary that you also download the tokenizer and pretrained LM beforehand:
+It is necessary that you also download the tokenizer and pretrained LM* beforehand:
 ```sh
 python run_download_lm.py --lm_name dmis-lab/biobert-v1.1 --log_to_file 0
 ```
 
-### GENIA dataset
+*Feel free to use any pretrained model from HuggingFace: https://huggingface.co/models
 
-Download and preprocess the GENIA dataset:
+### Dataset
+
+GENIA is the dataset where I have tested this repository. You can download and prepare this dataset with these commands:
 ```sh
 cd data
 wget http://www.nactem.ac.uk/GENIA/current/GENIA-corpus/Term/GENIAcorpus3.02.tgz --no-check-certificate
@@ -46,6 +48,23 @@ python run_preprocess.py \
     --raw_filepath "./data/GENIA/GENIA_term_3.02/GENIAcorpus3.02.xml" \
     --lm_name dmis-lab/biobert-v1.1 \
     --cased 0
+```
+
+If you want to use a different dataset, it must be a JSON file as follows:
+```json
+{
+  "tokens": ["token0", "token1", "token2"],
+  "entities": [
+    {
+      "entity_type": "PER", 
+      "span": [0, 1],
+    },
+    {
+      "entity_type": "ORG", 
+      "span": [2, 3],
+    },
+  ]
+}
 ```
 
 ## Commands

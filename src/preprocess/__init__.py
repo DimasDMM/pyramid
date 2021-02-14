@@ -3,7 +3,7 @@ from .. import *
 
 def sanity_check(dataset):
     n_bad = 0
-    for i, item in enumerate(dataset):
+    for item in dataset:
         length = len(item['tokens'])
         for entity in item['entities']:
             if entity['span'][1] <= length:

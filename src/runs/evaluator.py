@@ -34,6 +34,11 @@ def run_evaluator(logger, config: Config):
     # Load datasets
     logger.info('Loading dataset...')
 
+    train_file = './data/train.%s.json' % config.dataset
+    with open(train_file, 'r') as fp:
+        train_dataset = json.load(fp)
+    logger.info('Loaded train dataset size: %d' % len(train_dataset))
+
     valid_file = './data/valid.%s.json' % config.dataset
     with open(valid_file, 'r') as fp:
         valid_dataset = json.load(fp)
@@ -53,6 +58,7 @@ def run_evaluator(logger, config: Config):
     
     # Transform format of nested entities
     logger.info('Building layer outputs...')
+    train_dataset, _ = add_layer_outputs(train_dataset, total_layers=model_params.total_layers, entity_dict=entity_dict)
     valid_dataset, _ = add_layer_outputs(valid_dataset, total_layers=model_params.total_layers, entity_dict=entity_dict)
     test_dataset, _ = add_layer_outputs(test_dataset, total_layers=model_params.total_layers, entity_dict=entity_dict)
 
@@ -61,21 +67,32 @@ def run_evaluator(logger, config: Config):
     tokenizer = get_tokenizer(lm_name=model_params.lm_name, lowercase=(not model_params.cased_lm))
     word_input = WordInput(word2id, lowercase=(not model_params.cased_word))
     char_input = CharInput(char2id, lowercase=(not model_params.cased_char))
-    bert_input = BertInput(tokenizer, lowercase=(not model_params.cased_lm))
+    lm_input = LMInput(tokenizer, lowercase=(not model_params.cased_lm))
 
-    logger.info('Creating data loader...')
+    logger.info('Creating data loaders...')
+    nne_train_dataset = NestedNamedEntitiesDataset(
+            train_dataset, word_input, char_input, lm_input, total_layers=model_params.total_layers,
+            skip_exceptions=False, max_items=-1, padding_length=512)
+    train_dataloader = DataLoader(nne_train_dataset, batch_size=model_params.batch_size, shuffle=False, num_workers=0)
+
     nne_valid_dataset = NestedNamedEntitiesDataset(
-            valid_dataset, word_input, char_input, bert_input, total_layers=model_params.total_layers,
+            valid_dataset, word_input, char_input, lm_input, total_layers=model_params.total_layers,
             skip_exceptions=False, max_items=-1, padding_length=512)
     valid_dataloader = DataLoader(nne_valid_dataset, batch_size=model_params.batch_size, shuffle=False, num_workers=0)
     
     nne_test_dataset = NestedNamedEntitiesDataset(
-            test_dataset, word_input, char_input, bert_input, total_layers=model_params.total_layers,
+            test_dataset, word_input, char_input, lm_input, total_layers=model_params.total_layers,
             skip_exceptions=False, max_items=-1, padding_length=512)
     test_dataloader = DataLoader(nne_test_dataset, batch_size=model_params.batch_size, shuffle=False, num_workers=0)
     
     # Evaluate with test dataset
-    logger.info('Evaluating model with dev/test datasets...')
+    logger.info('Evaluating model with train/dev/test datasets...')
+    
+    eval_scores = evaluate(net, dataloader=train_dataloader, device=config.device,
+                           total_layers=model_params.total_layers, entity_idx=entity_idx)
+    logger.info('Train Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
+                eval_scores['precision'], eval_scores['recall'], eval_scores['f1']))
+
     eval_scores = evaluate(net, dataloader=valid_dataloader, device=config.device,
                            total_layers=model_params.total_layers, entity_idx=entity_idx)
     logger.info('Dev Scores | Precision: %.4f | Recall: %.4f | F1-score: %.4f' % (
@@ -87,7 +104,7 @@ def run_evaluator(logger, config: Config):
                 eval_scores['precision'], eval_scores['recall'], eval_scores['f1']))
     
     # Store predictions
-    logger.info('Saving predictions as JSON file...')
+    logger.info('Saving dev/test predictions as JSON file...')
     logger.info('- Validation set...')
     evaluate_save(net, nne_valid_dataset, config.device, entity_idx, total_layers=model_params.total_layers,
                   output_filepath='./artifacts/valid_predictions.json')

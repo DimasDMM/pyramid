@@ -148,8 +148,8 @@ def get_norm_entities(entities):
     return entities
 
 def transform_text_spans(text, entity_list, tokenizer, lowercase=True):
-    tokens, spans = tokenize_text(tokenizer, text, lowercase=lowercase)
-    for i, entity in enumerate(entity_list):
+    tokens, spans, token_offsets = tokenize_text(tokenizer, text, lowercase=lowercase)
+    for entity in entity_list:
         span_start, span_end = entity['span']
         new_span_start = -1
         new_span_end = -1
@@ -197,4 +197,4 @@ def transform_text_spans(text, entity_list, tokenizer, lowercase=True):
         if new_span_start != -1 and new_span_end != -1:
             entity['span'] = [new_span_start, new_span_end]
 
-    return tokens, entity_list
+    return tokens, entity_list, token_offsets

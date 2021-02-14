@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from transformers import AutoModel
 from . import *
 
 class CharEncoder(nn.Module):
@@ -32,12 +33,12 @@ class LMEncoder(nn.Module):
         self.lm_layer = create_lm_layer(lm_name, False, device=device)
     
     def _create_lm_layer(self, lm_name, trainable):
-        bert_model = BertModel.from_pretrained(lm_name)
+        pretrained_lm = AutoModel.from_pretrained(lm_name)
         if not trainable:
-            for param in bert_model.parameters():
+            for param in pretrained_lm.parameters():
                 param.requires_grad = False
         
-        return bert_model.to(device=self.device)
+        return pretrained_lm.to(device=self.device)
 
     def forward(self, inputs, attention, type_ids, lm_spans, masks):
         x_lm = self.lm_layer(input_ids=inputs, attention_mask=attention, token_type_ids=type_ids,

@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from transformers import BertModel
+from transformers import AutoModel
 
 def create_emb_layer(trainable, embedding_matrix=None, shape=None, device=None):
     if embedding_matrix is None:
@@ -14,11 +14,11 @@ def create_emb_layer(trainable, embedding_matrix=None, shape=None, device=None):
     
 def create_lm_layer(lm_name, trainable, device=None, artifacts_path='./artifacts/'):
     lm_path = '%s/%s/' % (artifacts_path, lm_name)
-    bert_model = BertModel.from_pretrained(lm_path)
+    pretrained_lm = AutoModel.from_pretrained(lm_path)
     if not trainable:
-        for param in bert_model.parameters():
+        for param in pretrained_lm.parameters():
             param.requires_grad = False
-    return bert_model.to(device=device)
+    return pretrained_lm.to(device=device)
 
 def init_embeddings(input_embedding):
     bias = np.sqrt(3.0 / input_embedding.size(1))
