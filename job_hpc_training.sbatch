@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=hpc_task        # Job name
+#SBATCH --job-name=py_genia        # Job name
 #SBATCH --error=task.err           # File for outputting error
 #SBATCH --output=task.log          # File for outputting results
 #SBATCH --time=72:00:00            # Maximum execution time
