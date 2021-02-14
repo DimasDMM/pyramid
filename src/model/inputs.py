@@ -1,6 +1,6 @@
 
 class WordInput:
-    def __init__(self, word2id, lowercase=True):
+    def __init__(self, word2id, lowercase=False):
         self.word2id = word2id
         self.lowercase = lowercase
         
@@ -21,7 +21,7 @@ class WordInput:
         return input_ids
 
 class CharInput:
-    def __init__(self, char2id, lowercase=True):
+    def __init__(self, char2id, lowercase=False):
         self.char2id = char2id
         self.lowercase = lowercase
 
@@ -55,7 +55,7 @@ class CharInput:
         return input_ids
 
 class LMInput:
-    def __init__(self, tokenizer, lowercase=True):
+    def __init__(self, tokenizer, lowercase=False):
         self.tokenizer = tokenizer
         self.lowercase = lowercase
 
@@ -72,7 +72,7 @@ class LMInput:
         type_ids = []
         attention_mask = []
         for token in tok_text:
-            encoded_text = self.tokenizer.encode(token)
+            encoded_text = self.tokenizer(token)
 
             # Create inputs
             span = len(encoded_text['input_ids'][1:-1])

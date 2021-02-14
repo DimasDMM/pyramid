@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from .encoders import *
 from . import *
 
 class DecodingLayer(nn.Module):

@@ -29,10 +29,11 @@ def run_preprocess_genia(logger, filepath, cased, lm_name, no_entity='O'):
 
         genia_data += child_data
     
-    # Obtain dictionary of entity types
+    # Obtain dictionary of entity types and add an ID to each item
     logger.info('Getting dictionary of entities...')
     genia_et_freq = {}
-    for item in genia_data:
+    for i, item in enumerate(genia_data):
+        genia_data[i]['item_id'] = i
         for e in item['entities']:
             if e['entity_type'] not in genia_et_freq:
                 genia_et_freq[e['entity_type']] = 1

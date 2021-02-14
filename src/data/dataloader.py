@@ -1,5 +1,6 @@
 import torch
 from torch.utils.data import Dataset
+from .tokenization import *
 
 class NestedNamedEntitiesDataset(Dataset):    
     def __init__(self, data, word_input, char_input, lm_input, padding_length=512,
@@ -32,7 +33,7 @@ class NestedNamedEntitiesDataset(Dataset):
                 mask = [1.] * len(item['tokens']) + [0.] * (padding_length - len(item['tokens']))
                 self.masks.append(mask)
                 
-                token_offsets = self._get_offsets_from_tokens(item['text'], item['tokens'])
+                token_offsets = get_offsets_from_tokens(item['text'], item['tokens'])
                 self.token_offsets.append(token_offsets)
 
                 if 'item_id' in item:
@@ -66,18 +67,6 @@ class NestedNamedEntitiesDataset(Dataset):
                     raise e
         
         self._init_tensors(padding_length, total_layers)
-
-    def _get_offsets_from_tokens(self, text, tokens):
-        offsets = []
-        last_span = 0
-        for token in tokens:
-            span_start = text.find(token, last_span)
-            if span_start == -1:
-                raise Exception('Token "%s" (start: %d) not found in text: %s' % (token, last_span, text))
-            span_end = span_start + len(token)
-            last_span = span_start
-            offsets.append((span_start, span_end))
-        return offsets
 
     def _init_tensors(self, padding_length, total_layers):
         self.masks = torch.tensor(self.masks, dtype=torch.float)

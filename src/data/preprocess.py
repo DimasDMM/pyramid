@@ -39,10 +39,10 @@ def add_layer_outputs(dataset, total_layers=16, entity_dict=None):
     
     return dataset, entity_dict
 
-def build_char_vocab(genia_data, lower_case=False, special_tokens=[]):
+def build_char_vocab(genia_data, lowercase=False, special_tokens=[]):
     id2char = []
     for item in genia_data:
-        if lower_case:
+        if lowercase:
             item_chars = [x.lower() for x in ''.join(item['tokens'])]
         else:
             item_chars = [x for x in ''.join(item['tokens'])]

@@ -5,7 +5,6 @@ import torch
 
 BASE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 DEFAULT_SEED = 42
-set_seed(DEFAULT_SEED)
 
 def set_seed(seed):
     torch.backends.cudnn.deterministic = True
@@ -39,3 +38,6 @@ def none_or_int(value):
     if value == 'None':
         return None
     return int(value)
+
+# Default set up
+set_seed(DEFAULT_SEED)
