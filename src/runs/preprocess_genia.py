@@ -39,8 +39,6 @@ def run_preprocess_genia(logger, filepath, cased, lm_name, no_entity='O'):
             else:
                 genia_et_freq[e['entity_type']] += 1
 
-    genia_et = [no_entity] + list(genia_et_freq.keys())
-
     # Sanity check
     logger.info('Running sanity check...')
     n_bad = sanity_check(genia_data)
