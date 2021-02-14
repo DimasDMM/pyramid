@@ -29,7 +29,7 @@ cd ..
 
 It is necessary that you also download the tokenizer and pretrained LM* beforehand:
 ```sh
-python run_download_lm.py --lm_name dmis-lab/biobert-v1.1 --log_to_file 0
+python run_download_lm.py --lm_name dmis-lab/biobert-v1.1
 ```
 
 *Feel free to use any pretrained model from HuggingFace: https://huggingface.co/models
