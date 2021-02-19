@@ -4,6 +4,8 @@
 
 Pyramid is a novel layered model for Nested Named Entity Recognition (nested NER). This code is based in the paper *Pyramid: A Layered Model for Nested Named Entity Recognition* by Jue Wang et al.
 
+![./images/pyramid-example.jpg](./images/pyramid-example.jpg)
+
 Note that this code is based in my own understanding of the paper. Nevertheless, the authors released the code of the paper at https://github.com/LorrinWWW/Pyramid/.
 
 This repository also contains a step-by-step execution in the notebooks contained in the folder [notebooks](./notebooks).
@@ -108,3 +110,5 @@ This repository includes sbatch files to run the scripts with Slurm. See: https:
 ---
 
 Have fun! ᕙ (° ~ ° ~)
+
+![./images/pyramid-pie.jpg](./images/pyramid-pie.jpg)
