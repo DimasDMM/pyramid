@@ -14,6 +14,7 @@ class Config:
         max_epoches=500,
         dropout=0.45,
         wv_file='./data/glove.6B.200d.txt',
+        use_char_encoder=True,
         lm_emb_dim=1024,
         lm_name='dmis-lab/biobert-large-cased-v1.1',
         cased_lm=False,
@@ -37,6 +38,7 @@ class Config:
         self.max_epoches = max_epoches
         self.dropout = dropout
         self.wv_file = wv_file
+        self.use_char_encoder = use_char_encoder
         self.lm_emb_dim = lm_emb_dim
         self.lm_name = lm_name
         self.cased_lm = cased_lm

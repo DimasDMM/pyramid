@@ -18,12 +18,10 @@ parser.add_argument('--model_ckpt',
                     type=none_or_str,
                     action='store')
 parser.add_argument('--dataset',
-                    default='genia',
                     type=str,
                     action='store')
 parser.add_argument('--device',
-                    default=None,
-                    type=none_or_str,
+                    type=str,
                     action='store')
 args = parser.parse_args()
 setup_logger(logger, args.log_to_file)

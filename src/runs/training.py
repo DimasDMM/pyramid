@@ -62,6 +62,9 @@ def run_training(logger, config: Config):
         if os.path.exists(config.model_ckpt):
             raise Exception('Pretrained model already exists in: %s' % config.model_ckpt)
 
+        use_char_encoder = config.use_char_encoder
+        use_word_encoder = (config.wv_file is not None)
+
         # Transform format of nested entities
         logger.info('Building layer outputs...')
         train_dataset, entity_dict = add_layer_outputs(train_dataset, total_layers=config.total_layers)
@@ -71,32 +74,39 @@ def run_training(logger, config: Config):
         # Load embeddings and build vocabularies
         logger.info('Loading embeddings...')
         special_tokens = ['[UNK]', '[PAD]', '[CLS]', '[SEP]', '[MASK]', '<unk>', '<pad>']
-        embedding_matrix, _, word2id = load_embedding_matrix(config.wv_file, config.token_emb_dim, special_tokens)
-        _, char2id = build_char_vocab(train_dataset, special_tokens=special_tokens)
+        if use_char_encoder:
+            _, char2id = build_char_vocab(train_dataset, special_tokens=special_tokens)
+        else:
+            char2id = None
+        if use_word_encoder:
+            embedding_matrix, _, word2id = load_embedding_matrix(config.wv_file, config.token_emb_dim, special_tokens)
+        else:
+            embedding_matrix = None
+            word2id = None
 
         # Build model
         logger.info('Building model...')
         total_classes = len(entity_idx)
-        net = PyramidNet(embedding_matrix, char2id, lm_name=config.lm_name, total_layers=config.total_layers,
+        net = PyramidNet(embedding_matrix, char_vocab=char2id, lm_name=config.lm_name, total_layers=config.total_layers,
                          drop_rate=config.dropout, seq_length=512, lm_dimension=config.lm_emb_dim,
                          char_dimension=config.char_emb_dim, word_dimension=config.token_emb_dim,
-                         total_classes=total_classes, device=config.device)
+                         total_classes=total_classes, use_char_encoder=use_char_encoder, device=config.device)
 
     # Create tokenizer and data inputs
     logger.info('Loading tokenizer and data inputs...')
     tokenizer = get_tokenizer(lm_name=config.lm_name, lowercase=(not config.cased_lm))
-    word_input = WordInput(word2id, lowercase=(not config.cased_word))
-    char_input = CharInput(char2id, lowercase=(not config.cased_char))
+    word_input = WordInput(word2id, lowercase=(not config.cased_word)) if use_word_encoder else None
+    char_input = CharInput(char2id, lowercase=(not config.cased_char)) if use_char_encoder else None
     lm_input = LMInput(tokenizer, lowercase=(not config.cased_lm))
 
     # Data loaders
     logger.info('Creating data loaders...')
     nne_train_dataset = NestedNamedEntitiesDataset(
-            train_dataset, word_input, char_input, lm_input, total_layers=config.total_layers,
-            skip_exceptions=False, max_items=-1, padding_length=512)
+            train_dataset, word_input=word_input, char_input=char_input, lm_input=lm_input,
+            total_layers=config.total_layers, skip_exceptions=False, max_items=-1, padding_length=512)
     nne_valid_dataset = NestedNamedEntitiesDataset(
-            valid_dataset, word_input, char_input, lm_input, total_layers=config.total_layers,
-            skip_exceptions=False, max_items=-1, padding_length=512)
+            valid_dataset, word_input=word_input, char_input=char_input, lm_input=lm_input,
+            total_layers=config.total_layers, skip_exceptions=False, max_items=-1, padding_length=512)
     train_dataloader = DataLoader(nne_train_dataset, batch_size=config.batch_size, shuffle=False, num_workers=0)
     valid_dataloader = DataLoader(nne_valid_dataset, batch_size=config.batch_size, shuffle=False, num_workers=0)
     
@@ -155,7 +165,7 @@ def run_training(logger, config: Config):
             adjust_lr(optimizer, step)
             run_loss += loss.cpu().data.numpy()
 
-            if i_batch % 10 == 0:
+            if i_batch % 50 == 0:
                 logger.info("Epoch %d of %d | Batch %d of %d | Loss = %.3f" % (
                         i_epoch + 1, config.max_epoches, i_batch + 1, n_batches, run_loss / (i_batch + 1)))
             

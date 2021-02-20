@@ -16,7 +16,6 @@ parser.add_argument('--log_to_file',
                     action='store')
 parser.add_argument('--dataset',
                     type=str,
-                    default='genia',
                     action='store')
 parser.add_argument('--raw_filepath',
                     type=str,

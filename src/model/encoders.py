@@ -4,16 +4,13 @@ from transformers import AutoModel
 from . import *
 
 class CharEncoder(nn.Module):
-    def __init__(self, char2id, dimension=60, hidden_size=100, device=None):
+    def __init__(self, char_vocab, dimension=60, hidden_size=100, device=None):
         super().__init__()
         self.device = device
         
-        self.embedding = create_emb_layer(True, shape=(len(char2id), dimension), device=device)
-        #init_embeddings(self.embedding.weight)
-        
+        self.embedding = create_emb_layer(True, shape=(len(char_vocab), dimension), device=device)
         self.lstm = nn.LSTM(input_size=dimension, hidden_size=hidden_size,
                             bidirectional=True, batch_first=True).to(device=device)
-        #init_lstm(self.lstm)
         
     def forward(self, inputs):
         x = self.embedding(inputs)
@@ -66,40 +63,55 @@ class LMEncoder(nn.Module):
         return x
 
 class EncoderLayer(nn.Module):
-    def __init__(self, lm_name, word_embeddings, char2id, char_dimension=60, word_dimension=200,
-                 lm_dimension=1024, hidden_size=100, drop_rate=0.45, device=None):
+    def __init__(self, lm_name, char_vocab=None, word_embeddings=None, char_dimension=100, word_dimension=200,
+                 lm_dimension=1024, hidden_size=100, drop_rate=0.45, use_char_encoder=True, device=None):
         super(EncoderLayer, self).__init__()
         
         self.device = device
 
-        self.char_encoder = CharEncoder(char2id, char_dimension, hidden_size, device=device)
-        self.emb_word = self._create_emb_layer(False, embedding_matrix=word_embeddings, device=device).to(device=device)
+        self.use_char_encoder = use_char_encoder
+        if use_char_encoder:
+            self.char_encoder = CharEncoder(char_vocab, char_dimension, hidden_size, device=device)
+        else:
+            self.char_encoder = None
+
+        self.use_word_encoder = (word_embeddings is not None)
+        if self.use_word_encoder:
+            self.emb_word = self._create_emb_layer(False, embedding_matrix=word_embeddings, device=device).to(device=device)
+        else:
+            self.emb_word = None
+        
+        if self.use_char_encoder or self.use_word_encoder:
+            enc_hidden_size = hidden_size * int(self.use_char_encoder) * 2 + word_dimension * int(self.use_word_encoder)
+            self.lstm_enc = nn.LSTM(input_size=enc_hidden_size, hidden_size=hidden_size,
+                                    bidirectional=True, batch_first=True).to(device=device)
+
         self.dropout = nn.Dropout(drop_rate).to(device=device)
         self.lm_encoder = LMEncoder(lm_name, device=device)
-
-        self.lstm_char = nn.LSTM(input_size=char_dimension, hidden_size=hidden_size,
-                                 bidirectional=True, batch_first=True).to(device=device)
-        #init_lstm(self.lstm_char)
-        
-        self.lstm_enc = nn.LSTM(input_size=(hidden_size*2 + word_dimension),
-                                hidden_size=hidden_size, bidirectional=True, batch_first=True).to(device=device)
-        #init_lstm(self.lstm_enc)
-        
         self.linear = nn.Linear(lm_dimension + hidden_size*2, hidden_size*2).to(device=device)
-        #init_linear(self.linear)
 
     def forward(self, input_word, input_char, input_lm, input_lm_attention, input_lm_type_ids,
                 input_lm_spans, input_masks):
-        x_char = self.char_encoder(input_char)
-        x_word = self.emb_word(input_word)
+        if self.use_char_encoder:
+            x_char = self.char_encoder(input_char)
+        if self.use_word_encoder:
+            x_word = self.emb_word(input_word)
         
-        x_enc = torch.cat((x_char, x_word), dim=-1)
-        x_enc = self.dropout(x_enc)
-        x_enc, _ = self.lstm_enc(x_enc)
+        if self.use_char_encoder or self.use_word_encoder:
+            if self.use_char_encoder and self.use_word_encoder:
+                x_enc = torch.cat((x_char, x_word), dim=-1)
+            else:
+                x_enc = x_char if self.use_char_encoder else x_word
+            x_enc = self.dropout(x_enc)
+            x_enc, _ = self.lstm_enc(x_enc)
         
         x_lm = self.lm_encoder(input_lm, input_lm_attention, input_lm_type_ids, input_lm_spans, input_masks)
         
-        x = torch.cat((x_enc, x_lm), dim=2)
+        if self.use_char_encoder or self.use_word_encoder:
+            x = torch.cat((x_enc, x_lm), dim=2)
+        else:
+            x = x_lm
+
         x = self.linear(x)
         
         return x

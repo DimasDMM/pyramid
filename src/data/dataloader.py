@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 from .tokenization import *
 
 class NestedNamedEntitiesDataset(Dataset):    
-    def __init__(self, data, word_input, char_input, lm_input, padding_length=512,
+    def __init__(self, data, lm_input, word_input=None, char_input=None, padding_length=512,
                  total_layers=16, skip_exceptions=True, max_items=-1, has_outputs=True):
         self.total_layers = total_layers
         self.has_outputs = has_outputs
@@ -26,8 +26,8 @@ class NestedNamedEntitiesDataset(Dataset):
                 break
             
             try:
-                x_word = word_input.encode(item['tokens'], padding_length)
-                x_char = char_input.encode(item['tokens'], padding_length)
+                x_word = word_input.encode(item['tokens'], padding_length) if word_input is not None else []
+                x_char = char_input.encode(item['tokens'], padding_length) if char_input is not None else []
                 x_lm, x_lm_span = lm_input.encode(item['tokens'], padding_length)
 
                 mask = [1.] * len(item['tokens']) + [0.] * (padding_length - len(item['tokens']))

@@ -106,16 +106,17 @@ class InversePyramidLayer(nn.Module):
         return h
 
 class PyramidNet(nn.Module):
-    def __init__(self, embedding_matrix, char_vocab, lm_name='dmis-lab/biobert-large-cased-v1.1',
-                 total_layers=16, drop_rate=0.45, seq_length=512, char_dimension=60, word_dimension=200,
-                 lm_dimension=1024, hidden_size=100, total_classes=10, device=None):
+    def __init__(self, embedding_matrix, char_vocab=None, lm_name='dmis-lab/biobert-large-cased-v1.1',
+                 total_layers=16, drop_rate=0.45, seq_length=512, char_dimension=60,
+                 word_dimension=200, lm_dimension=1024, hidden_size=100, total_classes=10,
+                 use_char_encoder=True, device=None):
         super(PyramidNet, self).__init__()
         self.device = device
         
         self.encoder_layer = EncoderLayer(
-                lm_name, embedding_matrix, char_vocab, char_dimension=char_dimension,
+                lm_name, word_embeddings=embedding_matrix, char_vocab=char_vocab, char_dimension=char_dimension,
                 word_dimension=word_dimension, lm_dimension=lm_dimension, hidden_size=hidden_size,
-                drop_rate=drop_rate, device=device)
+                drop_rate=drop_rate, use_char_encoder=use_char_encoder, device=device)
         
         self.pyramid = PyramidLayer(total_layers=total_layers, drop_rate=drop_rate,
                                     seq_length=seq_length, hidden_size=hidden_size, device=device)

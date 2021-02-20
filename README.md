@@ -76,6 +76,7 @@ Fine-tune model:
 python run_training.py \
     --model_ckpt ./artifacts/genia/ \
     --wv_file ./data/glove.6B.200d.txt \
+    --use_char_encoder 1 \
     --dataset genia \
     --max_epoches 500 \
     --max_steps 1e9 \
@@ -102,6 +103,31 @@ python run_evaluator.py \
     --dataset genia \
     --device cuda
 ```
+
+### Parameters
+
+The parameters that you can use are the following ones:
+
+- `device`: Device to use: cpu or cuda.
+- `model_ckpt`: Path to store the model.
+- `wv_file`: (Optional, default=None) Path to file with embeddings of words. If not provided, it won't use the _Word Encoder_ described in the paper.
+- `use_char_encoder`: (Optional, default=1) Uses the _Char Encoder_ described in the paper.
+- `dataset`: Name of the dataset to use. The dataset files must be located in the folder `./data` with the names `train.<dataset>.json`, `valid.<dataset>.json` and `test.<dataset>.json` for the train, validation and test datasets respectively.
+- `max_epoches`: (Optional, default=500) Maximum number of epoches for training.
+- `max_steps`: (Optional, default=1e9) Maximum number of steps for training.
+- `total_layers`: (Optional, default=16) Number of layers in the pyramid.
+- `batch_size`: (Optional, default=64) Batch size for training.
+- `token_emb_dim`: (Optional, default=100) Dimension of token embeddings.
+- `char_emb_dim`: (Optional, default=100) Dimension of char embeddings.
+- `cased_lm`: (Optional, default=1) Use cased _LM Encoder_.
+- `cased_word`: (Optional, default=1) Use cased _Word Encoder_.
+- `cased_char`: (Optional, default=1) Use cased _Char Encoder_.
+- `hidden_dim`: (Optional, default=100) Hidden dimension of LSTM layers in the pyramid. Since the LSTM layers are bidirectional, the actual hidden dimension will be twice the value.
+- `dropout`: (Optional, default=0.45) Dropout rate.
+- `lm_name`: (Optional, default=dmis-lab/biobert-large-cased-v1.1) Pretrained language model from Hugging Face. The model must be already downloaded in the folder `./artifacts` (use the script `run_download.py` to download and store it).
+- `lm_emb_dim`: (Optional, default=1024) Hidden dimension of the language model.
+- `continue_training`: (Optional, default=0) In order to avoid overriding a trained model, this flag must be set to `1` if we want to continue training a model from a checkpoint. If the model already exists and the flag is `0`, it will throw an error.
+- `log_to_file`: (Optional, default=None) File to store the standard output. 
 
 ## Additional comments
 

@@ -14,15 +14,17 @@ parser.add_argument('--log_to_file',
                     type=none_or_str,
                     action='store')
 parser.add_argument('--model_ckpt',
-                    default=None,
                     type=none_or_str,
                     action='store')
 parser.add_argument('--wv_file',
-                    default='./data/embeddings/glove.6B.100d.txt',
-                    type=str,
+                    default=None,
+                    type=none_or_str,
+                    action='store')
+parser.add_argument('--use_char_encoder',
+                    default=1,
+                    type=int,
                     action='store')
 parser.add_argument('--dataset',
-                    default='genia',
                     type=str,
                     action='store')
 parser.add_argument('--total_layers',
@@ -86,8 +88,7 @@ parser.add_argument('--continue_training',
                     type=int,
                     action='store')
 parser.add_argument('--device',
-                    default=None,
-                    type=none_or_str,
+                    type=str,
                     action='store')
 args = parser.parse_args()
 setup_logger(logger, args.log_to_file)

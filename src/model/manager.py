@@ -18,19 +18,27 @@ def load_model_objects(logger, model_ckpt, dataset, device):
         char2id = model_config['char2id']
         entity_idx = model_config['entity_idx']
         logger.info(model_params.__dict__)
+    
+    use_char_encoder = model_params.use_char_encoder
+    use_word_encoder = model_params.wv_file is not None
 
     # Load embeddings and build vocabularies
     logger.info('Loading embeddings...')
     special_tokens = ['[UNK]', '[PAD]', '[CLS]', '[SEP]', '[MASK]', '<unk>', '<pad>']
-    embedding_matrix, _, _ = load_embedding_matrix(model_params.wv_file, model_params.token_emb_dim, special_tokens)
+    if use_word_encoder:
+        embedding_matrix, _, _ = load_embedding_matrix(model_params.wv_file, model_params.token_emb_dim,
+                                                    special_tokens)
+    else:
+        embedding_matrix = None
 
     # Build base model without trained weights
     logger.info('Building base model...')
     total_classes = len(entity_idx)
-    net = PyramidNet(embedding_matrix, char2id, lm_name=model_params.lm_name, total_layers=model_params.total_layers,
-                     drop_rate=model_params.dropout, seq_length=512, lm_dimension=model_params.lm_emb_dim,
+    net = PyramidNet(embedding_matrix, char2id, lm_name=model_params.lm_name,
+                     total_layers=model_params.total_layers, drop_rate=model_params.dropout,
+                     seq_length=512, lm_dimension=model_params.lm_emb_dim,
                      char_dimension=model_params.char_emb_dim, word_dimension=model_params.token_emb_dim,
-                     total_classes=total_classes, device=device)
+                     total_classes=total_classes, use_char_encoder=use_char_encoder, device=device)
 
     # Load model weights and config params
     logger.info('Loading model weights...')

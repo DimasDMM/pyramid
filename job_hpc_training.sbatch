@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=py_genia        # Job name
+#SBATCH --job-name=pyramid         # Job name
 #SBATCH --error=task.err           # File for outputting error
 #SBATCH --output=task.log          # File for outputting results
-#SBATCH --time=72:00:00            # Maximum execution time
+#SBATCH --time=96:00:00            # Maximum execution time
 #SBATCH --ntasks=1                 # Number of MPI processes
 #SBATCH --nodes=1                  # Required number of nodes
 #SBATCH --gpus=1                   # Required GPU
