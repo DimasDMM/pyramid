@@ -72,23 +72,21 @@ class EncoderLayer(nn.Module):
         self.use_char_encoder = use_char_encoder
         if use_char_encoder:
             self.char_encoder = CharEncoder(char_vocab, char_dimension, hidden_size, device=device)
-        else:
-            self.char_encoder = None
 
         self.use_word_encoder = (word_embeddings is not None)
         if self.use_word_encoder:
             self.emb_word = self._create_emb_layer(False, embedding_matrix=word_embeddings, device=device).to(device=device)
-        else:
-            self.emb_word = None
         
         if self.use_char_encoder or self.use_word_encoder:
             enc_hidden_size = hidden_size * int(self.use_char_encoder) * 2 + word_dimension * int(self.use_word_encoder)
             self.lstm_enc = nn.LSTM(input_size=enc_hidden_size, hidden_size=hidden_size,
                                     bidirectional=True, batch_first=True).to(device=device)
-
-        self.dropout = nn.Dropout(drop_rate).to(device=device)
+            self.dropout = nn.Dropout(drop_rate).to(device=device)
+        
         self.lm_encoder = LMEncoder(lm_name, device=device)
-        self.linear = nn.Linear(lm_dimension + hidden_size*2, hidden_size*2).to(device=device)
+
+        lin_hidden_size = lm_dimension + hidden_size * int(self.use_char_encoder or self.use_word_encoder) * 2
+        self.linear = nn.Linear(lin_hidden_size, hidden_size*2).to(device=device)
 
     def forward(self, input_word, input_char, input_lm, input_lm_attention, input_lm_type_ids,
                 input_lm_spans, input_masks):

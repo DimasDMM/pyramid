@@ -14,8 +14,6 @@ class DecodingLayer(nn.Module):
         
         self.lstm = nn.LSTM(input_size=hidden_size*2, hidden_size=hidden_size, bidirectional=True, batch_first=True).to(device=device)
         self.conv = nn.Conv1d(in_channels=hidden_size*2, out_channels=hidden_size*2, kernel_size=2, stride=1).to(device=device)
-        
-        #init_lstm(self.lstm)
 
     def forward(self, input):
         x = self.norm(input)
@@ -43,7 +41,7 @@ class PyramidLayer(nn.Module):
     def forward(self, input):
         h = []
         x_layer = input
-        for i, layer in enumerate(self.decoding_layers):
+        for layer in self.decoding_layers:
             h_layer, x_layer = layer(x_layer)
             h.append(h_layer)
         
@@ -60,8 +58,6 @@ class InverseDecodingLayer(nn.Module):
         
         self.lstm = nn.LSTM(input_size=hidden_size*2, hidden_size=hidden_size, bidirectional=True, batch_first=True).to(device=device)
         self.conv = nn.Conv1d(in_channels=hidden_size*4, out_channels=hidden_size*2, kernel_size=2, padding=1, stride=1).to(device=device)
-        
-        #init_lstm(self.lstm)
 
     def forward(self, input_h, input_x):
         x = self.norm(input_x)
@@ -92,8 +88,7 @@ class InversePyramidLayer(nn.Module):
     def forward(self, input_hs):
         h = []
         batch_size = input_hs[-1].size()[0]
-        
-        x_pad = torch.zeros(batch_size, 1, self.hidden_size*4).to(device=self.device)
+
         x_layer = torch.zeros(batch_size,
                               self.seq_length - self.total_layers + 1,
                               self.hidden_size*2).to(device=self.device)

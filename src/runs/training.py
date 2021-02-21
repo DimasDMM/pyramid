@@ -72,17 +72,20 @@ def run_training(logger, config: Config):
         entity_idx = [x for x in list(entity_dict.keys())]
 
         # Load embeddings and build vocabularies
-        logger.info('Loading embeddings...')
-        special_tokens = ['[UNK]', '[PAD]', '[CLS]', '[SEP]', '[MASK]', '<unk>', '<pad>']
-        if use_char_encoder:
-            _, char2id = build_char_vocab(train_dataset, special_tokens=special_tokens)
-        else:
-            char2id = None
-        if use_word_encoder:
-            embedding_matrix, _, word2id = load_embedding_matrix(config.wv_file, config.token_emb_dim, special_tokens)
-        else:
-            embedding_matrix = None
-            word2id = None
+        if use_char_encoder or use_word_encoder:
+            logger.info('Loading embeddings...')
+            special_tokens = ['[UNK]', '[PAD]', '[CLS]', '[SEP]', '[MASK]', '<unk>', '<pad>']
+            if use_char_encoder:
+                _, char2id = build_char_vocab(train_dataset, special_tokens=special_tokens)
+            else:
+                logger.info('- No char encoder')
+                char2id = None
+            if use_word_encoder:
+                embedding_matrix, _, word2id = load_embedding_matrix(config.wv_file, config.token_emb_dim, special_tokens)
+            else:
+                logger.info('- No word encoder')
+                embedding_matrix = None
+                word2id = None
 
         # Build model
         logger.info('Building model...')
@@ -121,6 +124,10 @@ def run_training(logger, config: Config):
     n_batches = len(train_dataloader)
 
     logger.info('Start training')
+
+    if config.device == 'cuda':
+        gc.collect()
+        torch.cuda.empty_cache()
 
     for _ in range(config.max_epoches):
         run_loss = 0
