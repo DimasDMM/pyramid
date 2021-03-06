@@ -86,6 +86,10 @@ def run_training(logger, config: Config):
                 logger.info('- No word encoder')
                 embedding_matrix = None
                 word2id = None
+        else:
+            embedding_matrix = None
+            char2id = None
+            word2id = None
 
         # Build model
         logger.info('Building model...')

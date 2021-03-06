@@ -61,28 +61,37 @@ def run_evaluator(logger, config: Config):
     train_dataset, _ = add_layer_outputs(train_dataset, total_layers=model_params.total_layers, entity_dict=entity_dict)
     valid_dataset, _ = add_layer_outputs(valid_dataset, total_layers=model_params.total_layers, entity_dict=entity_dict)
     test_dataset, _ = add_layer_outputs(test_dataset, total_layers=model_params.total_layers, entity_dict=entity_dict)
+    
+    use_word_encoder = (model_params.wv_file is not None)
+    use_char_encoder = model_params.use_char_encoder
+    if not use_word_encoder:
+        logger.info('- No word encoder')
+        word2id = None
+    if not use_char_encoder:
+        logger.info('- No char encoder')
+        char2id = None
 
     # Create tokenizer and data inputs
     logger.info('Loading tokenizer and data inputs...')
     tokenizer = get_tokenizer(lm_name=model_params.lm_name, lowercase=(not model_params.cased_lm))
-    word_input = WordInput(word2id, lowercase=(not model_params.cased_word))
-    char_input = CharInput(char2id, lowercase=(not model_params.cased_char))
+    word_input = WordInput(word2id, lowercase=(not model_params.cased_word)) if use_word_encoder else None
+    char_input = CharInput(char2id, lowercase=(not model_params.cased_char)) if use_char_encoder else None
     lm_input = LMInput(tokenizer, lowercase=(not model_params.cased_lm))
 
     logger.info('Creating data loaders...')
     nne_train_dataset = NestedNamedEntitiesDataset(
-            train_dataset, word_input, char_input, lm_input, total_layers=model_params.total_layers,
-            skip_exceptions=False, max_items=-1, padding_length=512)
+            train_dataset, word_input=word_input, char_input=char_input, lm_input=lm_input,
+            total_layers=model_params.total_layers, skip_exceptions=False, max_items=-1, padding_length=512)
     train_dataloader = DataLoader(nne_train_dataset, batch_size=model_params.batch_size, shuffle=False, num_workers=0)
 
     nne_valid_dataset = NestedNamedEntitiesDataset(
-            valid_dataset, word_input, char_input, lm_input, total_layers=model_params.total_layers,
-            skip_exceptions=False, max_items=-1, padding_length=512)
+            valid_dataset, word_input=word_input, char_input=char_input, lm_input=lm_input,
+            total_layers=model_params.total_layers, skip_exceptions=False, max_items=-1, padding_length=512)
     valid_dataloader = DataLoader(nne_valid_dataset, batch_size=model_params.batch_size, shuffle=False, num_workers=0)
     
     nne_test_dataset = NestedNamedEntitiesDataset(
-            test_dataset, word_input, char_input, lm_input, total_layers=model_params.total_layers,
-            skip_exceptions=False, max_items=-1, padding_length=512)
+            test_dataset, word_input=word_input, char_input=char_input, lm_input=lm_input,
+            total_layers=model_params.total_layers, skip_exceptions=False, max_items=-1, padding_length=512)
     test_dataloader = DataLoader(nne_test_dataset, batch_size=model_params.batch_size, shuffle=False, num_workers=0)
     
     # Evaluate with test dataset
