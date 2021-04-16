@@ -76,7 +76,7 @@ Fine-tune model:
 python run_training.py \
     --model_ckpt ./artifacts/genia/ \
     --wv_file ./data/glove.6B.200d.txt \
-    --use_label_embeddings 1 \
+    --use_label_embeddings 0 \
     --use_char_encoder 1 \
     --dataset genia \
     --max_epoches 500 \
@@ -112,7 +112,7 @@ The parameters that you can use are the following ones:
 - `device`: Device to use: cpu or cuda.
 - `model_ckpt`: Path to store the model.
 - `wv_file`: (Optional, default=None) Path to file with embeddings of words. If not provided, it won't use the _Word Encoder_ described in the paper.
-- `use_label_embeddings`: (Optional, default=1) Uses a _label embedding_ layer in the top of the model.
+- `use_label_embeddings`: (Optional, default=0) Uses a _label embedding_ layer in the top of the model.
 - `use_char_encoder`: (Optional, default=1) Uses the _Char Encoder_ described in the paper.
 - `dataset`: Name of the dataset to use. The dataset files must be located in the folder `./data` with the names `train.<dataset>.json`, `valid.<dataset>.json` and `test.<dataset>.json` for the train, validation and test datasets respectively.
 - `max_epoches`: (Optional, default=500) Maximum number of epoches for training.

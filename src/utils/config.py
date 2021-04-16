@@ -15,7 +15,7 @@ class Config:
         dropout=0.45,
         wv_file=None,
         use_char_encoder=True,
-        use_label_embeddings=True,
+        use_label_embeddings=False,
         lm_emb_dim=1024,
         lm_name='dmis-lab/biobert-large-cased-v1.1',
         cased_lm=False,
