@@ -1,8 +1,7 @@
 import argparse
 import logging as logger
 import os
-from transformers import BertModel
-from transformers import BertTokenizer
+from transformers import BertModel, BertTokenizer
 from src import *
 
 if __name__ != '__main__':
