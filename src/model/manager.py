@@ -19,6 +19,7 @@ def load_model_objects(logger, model_ckpt, dataset, device):
         entity_idx = model_config['entity_idx']
         logger.info(model_params.__dict__)
     
+    use_label_embeddings = model_params.use_label_embeddings
     use_char_encoder = model_params.use_char_encoder
     use_word_encoder = model_params.wv_file is not None
 
@@ -26,8 +27,8 @@ def load_model_objects(logger, model_ckpt, dataset, device):
     logger.info('Loading embeddings...')
     special_tokens = ['[UNK]', '[PAD]', '[CLS]', '[SEP]', '[MASK]', '<unk>', '<pad>']
     if use_word_encoder:
-        embedding_matrix, _, _ = load_embedding_matrix(model_params.wv_file, model_params.token_emb_dim,
-                                                    special_tokens)
+        embedding_matrix, _, _ = load_embedding_matrix(
+                model_params.wv_file, model_params.token_emb_dim, special_tokens)
     else:
         embedding_matrix = None
 
@@ -38,7 +39,8 @@ def load_model_objects(logger, model_ckpt, dataset, device):
                      total_layers=model_params.total_layers, drop_rate=model_params.dropout,
                      seq_length=512, lm_dimension=model_params.lm_emb_dim,
                      char_dimension=model_params.char_emb_dim, word_dimension=model_params.token_emb_dim,
-                     total_classes=total_classes, use_char_encoder=use_char_encoder, device=device)
+                     total_classes=total_classes, use_char_encoder=use_char_encoder,
+                     use_label_embeddings=use_label_embeddings, device=device)
 
     # Load model weights and config params
     logger.info('Loading model weights...')

@@ -24,6 +24,10 @@ parser.add_argument('--use_char_encoder',
                     default=1,
                     type=int,
                     action='store')
+parser.add_argument('--use_label_embeddings',
+                    default=1,
+                    type=int,
+                    action='store')
 parser.add_argument('--dataset',
                     type=str,
                     action='store')

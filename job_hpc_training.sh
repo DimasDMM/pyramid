@@ -5,6 +5,7 @@ source activate tf
 python run_training.py \
     --model_ckpt ./artifacts/genia/ \
     --wv_file ./data/glove.6B.200d.txt \
+    --use_label_embeddings 0 \
     --use_char_encoder 1 \
     --dataset genia \
     --max_epoches 500 \

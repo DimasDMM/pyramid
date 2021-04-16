@@ -62,6 +62,7 @@ def run_training(logger, config: Config):
         if os.path.exists(config.model_ckpt):
             raise Exception('Pretrained model already exists in: %s' % config.model_ckpt)
 
+        use_label_embeddings = config.use_label_embeddings
         use_char_encoder = config.use_char_encoder
         use_word_encoder = (config.wv_file is not None)
 
@@ -94,10 +95,12 @@ def run_training(logger, config: Config):
         # Build model
         logger.info('Building model...')
         total_classes = len(entity_idx)
-        net = PyramidNet(embedding_matrix, char_vocab=char2id, lm_name=config.lm_name, total_layers=config.total_layers,
-                         drop_rate=config.dropout, seq_length=512, lm_dimension=config.lm_emb_dim,
-                         char_dimension=config.char_emb_dim, word_dimension=config.token_emb_dim,
-                         total_classes=total_classes, use_char_encoder=use_char_encoder, device=config.device)
+        net = PyramidNet(embedding_matrix, char_vocab=char2id, lm_name=config.lm_name,
+                         total_layers=config.total_layers, drop_rate=config.dropout, seq_length=512,
+                         lm_dimension=config.lm_emb_dim, char_dimension=config.char_emb_dim,
+                         word_dimension=config.token_emb_dim, total_classes=total_classes,
+                         use_char_encoder=use_char_encoder, use_label_embeddings=use_label_embeddings,
+                         device=config.device)
 
     # Create tokenizer and data inputs
     logger.info('Loading tokenizer and data inputs...')

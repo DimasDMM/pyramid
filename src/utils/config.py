@@ -15,6 +15,7 @@ class Config:
         dropout=0.45,
         wv_file=None,
         use_char_encoder=True,
+        use_label_embeddings=True,
         lm_emb_dim=1024,
         lm_name='dmis-lab/biobert-large-cased-v1.1',
         cased_lm=False,
@@ -39,6 +40,7 @@ class Config:
         self.dropout = dropout
         self.wv_file = wv_file
         self.use_char_encoder = use_char_encoder
+        self.use_label_embeddings = use_label_embeddings
         self.lm_emb_dim = lm_emb_dim
         self.lm_name = lm_name
         self.cased_lm = cased_lm
